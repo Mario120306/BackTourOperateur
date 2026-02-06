@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>itu.sprintest</groupId>
+    <groupId>itu.frameworkest</groupId>
     <artifactId>sprint_test</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -26,11 +26,18 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
-                <groupId>itu.sprint</groupId>
+                <groupId>itu.framework</groupId>
                 <artifactId>sprint-lib</artifactId>
                 <version>1.0-SNAPSHOT</version>
                 <scope>system</scope>
-                <systemPath>${project.basedir}/lib/sprint_framework-1.0-SNAPSHOT.jar</systemPath>
+                <systemPath>${project.basedir}/lib/framework.jar</systemPath>
+            </dependency>
+            
+            <!-- PostgreSQL JDBC Driver -->
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>42.7.1</version>
             </dependency>
         </dependencies>
 

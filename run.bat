@@ -12,7 +12,7 @@ echo.
 
 :: --- CONFIGURATION ---------------------------------------
 :: Repertoire Tomcat
-set "TOMCAT_HOME=C:\Users\Mario\Documents\apache-tomcat-10.1.34"
+set "TOMCAT_HOME=D:\apache-tomcat-10.1.28"
 
 :: Dossier webapps de Tomcat
 set "TOMCAT_WEBAPPS=%TOMCAT_HOME%\webapps"
