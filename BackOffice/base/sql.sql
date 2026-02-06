@@ -1,17 +1,7 @@
-reservation
-    id
-    id_client
-    nombre_passage
-    date_heure_arrive
-    id_hotel
 
-BACKOFFICE
-    formulaire de reservation
-FRONTEND
-    liste reservation avec filtre par date 
 
-SCRIPT HOTEL
-
+CREATE DATABASE tour_operateur;
+\c tour_operateur;
 CREATE TABLE reservation (
     id INT PRIMARY KEY AUTO_INCREMENT,
     id_client INT NOT NULL,

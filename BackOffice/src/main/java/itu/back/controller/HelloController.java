@@ -1,4 +1,4 @@
-package itu.back.controllers;
+package itu.back.controller;
 
 import itu.sprint.annotation.AnnotationController;
 import itu.sprint.annotation.MapURL;
