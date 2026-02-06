@@ -20,7 +20,7 @@ set "TOMCAT_WEBAPPS=%TOMCAT_HOME%\webapps"
 
 
 :: Nom du WAR (même que ton artifactId dans pom.xml)
-set "WAR_NAME=sprint_test-1.0-SNAPSHOT"
+set "WAR_NAME=backoperateur-1.0-SNAPSHOT"
 
 :: ----------------------------------------------------------
 

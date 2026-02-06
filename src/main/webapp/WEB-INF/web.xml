@@ -10,6 +10,10 @@
         <servlet>
             <servlet-name>FrontServlet</servlet-name>
             <servlet-class>com.itu.framework.servlet.FrontServlet</servlet-class>
+            <init-param>
+                <param-name>packageToScan</param-name>
+                <param-value>itu.back</param-value>
+            </init-param>
         </servlet>
         <servlet-mapping>
             <servlet-name>FrontServlet</servlet-name>
