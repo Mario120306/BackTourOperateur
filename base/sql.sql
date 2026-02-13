@@ -1,5 +1,3 @@
--- Active: 1743756076635@@127.0.0.1@5432@tour_operateur
-
 CREATE DATABASE tour_operateur;
 \c tour_operateur;
 
