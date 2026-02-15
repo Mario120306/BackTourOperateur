@@ -50,7 +50,7 @@ public class VehiculeController {
         }
     }
 
-    // ==================== FORMULAIRE AJOUT ====================
+    // ==================== FORMULAIRE AJOUT VEHICULE ====================
     @GetMapping("/vehicule/form")
     public ModelView showForm() {
         ModelView mv = new ModelView();
