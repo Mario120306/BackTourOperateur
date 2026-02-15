@@ -1,5 +1,3 @@
--- Active: 1743756076635@@127.0.0.1@5432@tour_operateur
-
 CREATE DATABASE tour_operateur;
 \c tour_operateur;
 
@@ -28,3 +26,15 @@ CREATE TABLE reservation (
     FOREIGN KEY (id_client) REFERENCES client(id),
     FOREIGN KEY (id_hotel) REFERENCES hotel(id)
 );
+
+-- Table pour la gestion des tokens JWT
+CREATE TABLE token (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(500) NOT NULL UNIQUE,
+    date_expiration TIMESTAMP NOT NULL,
+    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Index pour optimiser la recherche de token
+CREATE INDEX idx_token_value ON token(token);
+CREATE INDEX idx_token_expiration ON token(date_expiration);
