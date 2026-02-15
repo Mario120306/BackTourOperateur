@@ -1,3 +1,4 @@
+-- Active: 1743734403458@@127.0.0.1@5432@tour_operateur
 @echo off
 setlocal enabledelayedexpansion
 
@@ -31,8 +32,22 @@ echo.
 echo Execution du generateur de token...
 echo.
 
-REM Récupérer le classpath Maven
-for /f "tokens=*" %%i in ('mvn dependency:build-classpath -Dmdep.outputFile=NUL -q -DincludeScope=runtime exec:exec -Dexec.executable="cmd" -Dexec.args="/c echo %%classpath" 2^>nul') do set MAVEN_CP=%%i
+REM Récupérer le classpath Maven (runtime) dans un fichier
+call mvn -q -DincludeScope=runtime dependency:build-classpath -Dmdep.outputFile=target\classpath.txt
+
+if %ERRORLEVEL% neq 0 (
+    echo Erreur: impossible de generer le classpath Maven.
+    pause
+    exit /b 1
+)
+
+if not exist target\classpath.txt (
+    echo Erreur: le fichier target\classpath.txt est introuvable.
+    pause
+    exit /b 1
+)
+
+for /f "usebackq delims=" %%i in (`type target\classpath.txt`) do set MAVEN_CP=%%i
 
 REM Construire le classpath complet
 set CLASSPATH=target\classes;lib\*
