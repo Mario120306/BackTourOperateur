@@ -7,6 +7,17 @@
             <param-name>packageToScan</param-name>
             <param-value>itu.back</param-value>
         </context-param>
+        
+        <!-- Filtre pour la validation des tokens JWT -->
+        <filter>
+            <filter-name>TokenFilter</filter-name>
+            <filter-class>itu.back.filter.TokenFilter</filter-class>
+        </filter>
+        <filter-mapping>
+            <filter-name>TokenFilter</filter-name>
+            <url-pattern>/api/*</url-pattern>
+        </filter-mapping>
+        
         <servlet>
             <servlet-name>FrontServlet</servlet-name>
             <servlet-class>com.itu.framework.servlet.FrontServlet</servlet-class>
