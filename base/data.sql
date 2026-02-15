@@ -25,3 +25,14 @@ INSERT INTO hotel (nom, adresse, ville, pays) VALUES
 ('Hotel des Thermes', '34 Avenue de l''Indépendance', 'Antsirabe', 'Madagascar'),
 ('Hotel Le Royal', '45 Rue Rainibetsimisaraka', 'Antananarivo', 'Madagascar'),
 ('Hotel Vanille', '7 Boulevard de la Mer', 'Nosy Be', 'Madagascar');
+
+-- Insertion des types de carburant
+INSERT INTO type_carburant (reference, nom) VALUES
+('ESS', 'Essence'),
+('DSL', 'Diesel'),
+('HYB', 'Hybride'),
+('ELEC', 'Electrique'),
+('GPL', 'GPL'),
+('GNV', 'Gaz Naturel');
+
+

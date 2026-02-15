@@ -37,3 +37,28 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Custom ###
+*.bat
+*.jar
+*.properties
+
+# Maven / build
+/target/
+**/target/
+
+# Local libs / jars
+/BackTourOperateur/lib/*.jar
+*.jar
+
+# Local config / secrets (keep templates, ignore real credentials)
+**/database.properties
+*.env
+secrets.properties
+
+# IDE / OS
+/.idea/
+/.vscode/
+*.iml
+Thumbs.db
+.DS_Store
