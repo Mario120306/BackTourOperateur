@@ -1,4 +1,3 @@
--- Active: 1743734403458@@127.0.0.1@5432@tour_operateur
 @echo off
 setlocal enabledelayedexpansion
 
