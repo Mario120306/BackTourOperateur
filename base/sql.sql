@@ -15,22 +15,7 @@ CREATE TABLE hotel (
     ville VARCHAR(255) NOT NULL,
     pays VARCHAR(255) NOT NULL
 );
-CREATE TABLE type_carburant (
-    id SERIAL PRIMARY KEY,
-    reference VARCHAR(255) NOT NULL UNIQUE,
-    nom VARCHAR(255) NOT NULL UNIQUE
-);
-CREATE TABLE vehicule (
-    id SERIAL PRIMARY KEY,
-    marque VARCHAR(255) NOT NULL,
-    modele VARCHAR(255) NOT NULL,
-    nombre_places INT NOT NULL,
-    reference VARCHAR(255) NOT NULL UNIQUE,
-    vitesse_moyenne INT NOT NULL,
-    type_carburant_id INT NOT NULL,
-    FOREIGN KEY (type_carburant_id) REFERENCES type_carburant(id)
 
-);  
 CREATE TABLE reservation (
     id SERIAL PRIMARY KEY,
     id_client INT NOT NULL,
