@@ -1,3 +1,4 @@
+-- Active: 1743756076635@@127.0.0.1@5432@tour_operateur
 CREATE DATABASE tour_operateur;
 \c tour_operateur;
 
@@ -53,3 +54,28 @@ CREATE TABLE token (
 -- Index pour optimiser la recherche de token
 CREATE INDEX idx_token_value ON token(token);
 CREATE INDEX idx_token_expiration ON token(date_expiration);
+
+-- Tables rajoutées pour sprint 3
+
+-- Table des paramètres
+CREATE TABLE parametre (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    valeur VARCHAR(100) NOT NULL,
+    description VARCHAR(255)
+);
+
+-- Table des aéroports/hôtels (points de référence)
+CREATE TABLE aeroport (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(10) NOT NULL UNIQUE,
+    libelle VARCHAR(100) NOT NULL
+);
+
+-- Table des distances entre points
+CREATE TABLE distance (
+    id SERIAL PRIMARY KEY,
+    id_from INTEGER NOT NULL REFERENCES aeroport(id),
+    id_to INTEGER NOT NULL REFERENCES aeroport(id),
+    valeur DECIMAL(10,2) NOT NULL -- en km
+);
