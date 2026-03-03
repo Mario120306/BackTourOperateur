@@ -1,5 +1,6 @@
 package itu.back.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class Reservation {
@@ -9,10 +10,19 @@ public class Reservation {
     private Timestamp dateHeureArrive;
     private Timestamp dateReservation;
     private int idHotel;
+    
+    // Nouveaux champs pour planification véhicule
+    private Integer idVehicule;
+    private Integer idAeroport;
+    private BigDecimal distanceKm;
+    private Integer tempsEstimeMinutes;
+    private Timestamp heureDepart;
 
     // Relations (pour l'affichage)
     private Client client;
     private Hotel hotel;
+    private Vehicule vehicule;
+    private Aeroport aeroport;
 
     // Constructeurs
     public Reservation() {
@@ -77,6 +87,46 @@ public class Reservation {
         this.idHotel = idHotel;
     }
 
+    public Integer getIdVehicule() {
+        return idVehicule;
+    }
+
+    public void setIdVehicule(Integer idVehicule) {
+        this.idVehicule = idVehicule;
+    }
+
+    public Integer getIdAeroport() {
+        return idAeroport;
+    }
+
+    public void setIdAeroport(Integer idAeroport) {
+        this.idAeroport = idAeroport;
+    }
+
+    public BigDecimal getDistanceKm() {
+        return distanceKm;
+    }
+
+    public void setDistanceKm(BigDecimal distanceKm) {
+        this.distanceKm = distanceKm;
+    }
+
+    public Integer getTempsEstimeMinutes() {
+        return tempsEstimeMinutes;
+    }
+
+    public void setTempsEstimeMinutes(Integer tempsEstimeMinutes) {
+        this.tempsEstimeMinutes = tempsEstimeMinutes;
+    }
+
+    public Timestamp getHeureDepart() {
+        return heureDepart;
+    }
+
+    public void setHeureDepart(Timestamp heureDepart) {
+        this.heureDepart = heureDepart;
+    }
+
     public Client getClient() {
         return client;
     }
@@ -91,5 +141,34 @@ public class Reservation {
 
     public void setHotel(Hotel hotel) {
         this.hotel = hotel;
+    }
+
+    public Vehicule getVehicule() {
+        return vehicule;
+    }
+
+    public void setVehicule(Vehicule vehicule) {
+        this.vehicule = vehicule;
+    }
+
+    public Aeroport getAeroport() {
+        return aeroport;
+    }
+
+    public void setAeroport(Aeroport aeroport) {
+        this.aeroport = aeroport;
+    }
+
+    /**
+     * Retourne le temps formaté en heures et minutes
+     */
+    public String getTempsFormate() {
+        if (tempsEstimeMinutes == null) return "N/A";
+        int heures = tempsEstimeMinutes / 60;
+        int minutes = tempsEstimeMinutes % 60;
+        if (heures > 0) {
+            return heures + "h " + minutes + "min";
+        }
+        return minutes + " min";
     }
 }

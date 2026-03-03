@@ -1,5 +1,7 @@
 package itu.back.model;
 
+import java.math.BigDecimal;
+
 /**
  * DTO pour la sérialisation JSON des réservations
  */
@@ -12,6 +14,16 @@ public class ReservationDTO {
     private String dateReservation;
     private Client client;
     private Hotel hotel;
+    
+    // Nouveaux champs pour l'optimisation véhicule
+    private Integer idVehicule;
+    private Integer idAeroport;
+    private BigDecimal distanceKm;
+    private Integer tempsEstimeMinutes;
+    private String heureDepart;
+    private Vehicule vehicule;
+    private Aeroport aeroport;
+    private String tempsFormate;
 
     public ReservationDTO() {
     }
@@ -27,6 +39,17 @@ public class ReservationDTO {
             ? reservation.getDateReservation().toString() : null;
         this.client = reservation.getClient();
         this.hotel = reservation.getHotel();
+        
+        // Nouveaux champs
+        this.idVehicule = reservation.getIdVehicule();
+        this.idAeroport = reservation.getIdAeroport();
+        this.distanceKm = reservation.getDistanceKm();
+        this.tempsEstimeMinutes = reservation.getTempsEstimeMinutes();
+        this.heureDepart = reservation.getHeureDepart() != null 
+            ? reservation.getHeureDepart().toString() : null;
+        this.vehicule = reservation.getVehicule();
+        this.aeroport = reservation.getAeroport();
+        this.tempsFormate = reservation.getTempsFormate();
     }
 
     public int getId() {
@@ -91,5 +114,70 @@ public class ReservationDTO {
 
     public void setHotel(Hotel hotel) {
         this.hotel = hotel;
+    }
+
+    // Nouveaux getters et setters
+    public Integer getIdVehicule() {
+        return idVehicule;
+    }
+
+    public void setIdVehicule(Integer idVehicule) {
+        this.idVehicule = idVehicule;
+    }
+
+    public Integer getIdAeroport() {
+        return idAeroport;
+    }
+
+    public void setIdAeroport(Integer idAeroport) {
+        this.idAeroport = idAeroport;
+    }
+
+    public BigDecimal getDistanceKm() {
+        return distanceKm;
+    }
+
+    public void setDistanceKm(BigDecimal distanceKm) {
+        this.distanceKm = distanceKm;
+    }
+
+    public Integer getTempsEstimeMinutes() {
+        return tempsEstimeMinutes;
+    }
+
+    public void setTempsEstimeMinutes(Integer tempsEstimeMinutes) {
+        this.tempsEstimeMinutes = tempsEstimeMinutes;
+    }
+
+    public String getHeureDepart() {
+        return heureDepart;
+    }
+
+    public void setHeureDepart(String heureDepart) {
+        this.heureDepart = heureDepart;
+    }
+
+    public Vehicule getVehicule() {
+        return vehicule;
+    }
+
+    public void setVehicule(Vehicule vehicule) {
+        this.vehicule = vehicule;
+    }
+
+    public Aeroport getAeroport() {
+        return aeroport;
+    }
+
+    public void setAeroport(Aeroport aeroport) {
+        this.aeroport = aeroport;
+    }
+
+    public String getTempsFormate() {
+        return tempsFormate;
+    }
+
+    public void setTempsFormate(String tempsFormate) {
+        this.tempsFormate = tempsFormate;
     }
 }

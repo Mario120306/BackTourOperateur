@@ -79,3 +79,25 @@ CREATE TABLE distance (
     id_to INTEGER NOT NULL REFERENCES aeroport(id),
     valeur DECIMAL(10,2) NOT NULL -- en km
 );
+
+-- Table des distances entre aéroports et hôtels
+CREATE TABLE distance_hotel (
+    id SERIAL PRIMARY KEY,
+    id_aeroport INTEGER NOT NULL REFERENCES aeroport(id),
+    id_hotel INTEGER NOT NULL REFERENCES hotel(id),
+    valeur DECIMAL(10,2) NOT NULL -- en km
+);
+
+
+
+
+-- Index pour optimiser les recherches de distance
+CREATE INDEX idx_distance_hotel_aeroport ON distance_hotel(id_aeroport);
+CREATE INDEX idx_distance_hotel_hotel ON distance_hotel(id_hotel);
+
+-- Colonnes supplémentaires pour l'optimisation véhicule dans la table reservation
+ALTER TABLE reservation ADD COLUMN id_vehicule INTEGER REFERENCES vehicule(id);
+ALTER TABLE reservation ADD COLUMN id_aeroport INTEGER REFERENCES aeroport(id);
+ALTER TABLE reservation ADD COLUMN distance_km DECIMAL(10,2);
+ALTER TABLE reservation ADD COLUMN temps_estime_minutes INTEGER;
+ALTER TABLE reservation ADD COLUMN heure_depart TIMESTAMP;
