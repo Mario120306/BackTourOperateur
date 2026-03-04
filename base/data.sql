@@ -104,3 +104,56 @@ INSERT INTO parametre (code, valeur, description) VALUES
 ('CARBURANT_PRIORITAIRE', 'DSL', 'Type de carburant prioritaire (Diesel)'),
 ('MARGE_PLACES', '0', 'Nombre de places de marge pour optimisation'),
 ('TEMPS_ARRET_MINUTES', '30', 'Temps d arret à destination en minutes (dépose/récupération passagers)');
+-- Insertion de réservations de test pour la date 2026-03-15
+-- Pour tester l'optimisation avec regroupement de passagers
+INSERT INTO reservation (id_client, id_hotel, nombre_passage, date_heure_arrive) VALUES
+-- Groupe 1 : Grande famille (6 personnes) - doit être assignée en priorité
+(1, 3, 6, '2026-03-15 10:00:00'),
+
+-- Groupe 2 : Couple (2 personnes) - peut être combiné avec d'autres
+(2, 5, 2, '2026-03-15 10:30:00'),
+
+-- Groupe 3 : Famille moyenne (4 personnes)
+(3, 2, 4, '2026-03-15 11:00:00'),
+
+-- Groupe 4 : Trio (3 personnes) - peut être combiné
+(4, 9, 3, '2026-03-15 11:30:00'),
+
+-- Groupe 5 : Solo (1 personne) - doit être optimisé avec d'autres
+(5, 5, 1, '2026-03-15 12:00:00'),
+
+-- Groupe 6 : Duo (2 personnes) - peut être combiné
+(6, 3, 2, '2026-03-15 12:30:00'),
+
+-- Groupe 7 : Famille (5 personnes)
+(7, 2, 5, '2026-03-15 13:00:00'),
+
+-- Groupe 8 : Duo (2 personnes) - peut être combiné
+(8, 9, 2, '2026-03-15 13:30:00'),
+
+-- Groupe 9 : Grande famille (7 personnes)
+(9, 5, 7, '2026-03-15 14:00:00'),
+
+-- Groupe 10 : Solo (1 personne) - optimisation
+(10, 3, 1, '2026-03-15 14:30:00');
+
+-- RESULTATS ATTENDUS DE LA SIMULATION POUR 2026-03-15 :
+-- Total : 35 passagers répartis sur 10 réservations
+-- 
+-- Véhicule DSL 20 places (VEH-005 Renault Master) - PRIORITAIRE DIESEL:
+--   - 7 pers (id=9) + 5 pers (id=7) + 4 pers (id=3) = 16/20 places
+--
+-- Véhicule DSL 12 places (VEH-002 Mercedes Sprinter) - PRIORITAIRE DIESEL:
+--   - 6 pers (id=1) + 3 pers (id=4) + 2 pers (id=8) = 11/12 places
+--
+-- Véhicule DSL 8 places (VEH-004 Volkswagen Transporter) - PRIORITAIRE DIESEL:
+--   - 2 pers (id=2) + 1 pers (id=5) + 2 pers (id=6) + 1 pers (id=10) = 6/8 places
+--
+-- Véhicules DSL 7 et 9 places restent disponibles (pas assez de réservations)
+-- Véhicules ESSENCE ne sont pas utilisés (diesel prioritaire et capacité suffisante)-- RESERVATIONS ADDITIONNELLES pour 2026-03-20 (test avec depassement de capacite)  
+INSERT INTO reservation (id_client, id_hotel, nombre_passage, date_heure_arrive) VALUES  
+(1, 2, 15, '2026-03-20 10:00:00'),  -- Tres grand groupe  
+(2, 3, 18, '2026-03-20 10:30:00'),  -- Tres grand groupe  
+(3, 5, 12, '2026-03-20 11:00:00'),  -- Grand groupe  
+(4, 2, 8, '2026-03-20 11:30:00'),   -- Groupe moyen  
+(5, 9, 25, '2026-03-20 12:00:00');  -- IMPOSSIBLE (aucun vehicule n'a 25 places) 
