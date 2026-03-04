@@ -31,7 +31,7 @@ public class ParametreController {
             mv.addItem("parametres", parametres);
             mv.addItem("parametre", new Parametre());
             mv.addItem("isEdit", false);
-            mv.setView("/parametre-form.jsp");
+            mv.setView("/parametre/form.jsp");
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors du chargement du formulaire : " + e.getMessage());
             mv.setView("/error.jsp");
@@ -51,13 +51,13 @@ public class ParametreController {
             if (code == null || code.trim().isEmpty()) {
                 mv.addItem("error", "Le code est obligatoire.");
                 mv.addItem("parametres", getAllParametres());
-                mv.setView("/parametre-form.jsp");
+                mv.setView("/parametre/form.jsp");
                 return mv;
             }
             if (valeur == null || valeur.trim().isEmpty()) {
                 mv.addItem("error", "La valeur est obligatoire.");
                 mv.addItem("parametres", getAllParametres());
-                mv.setView("/parametre-form.jsp");
+                mv.setView("/parametre/form.jsp");
                 return mv;
             }
 
@@ -69,7 +69,7 @@ public class ParametreController {
             mv.addItem("parametres", getAllParametres());
             mv.addItem("parametre", new Parametre());
             mv.addItem("isEdit", false);
-            mv.setView("/parametre-form.jsp");
+            mv.setView("/parametre/form.jsp");
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors de l'insertion : " + e.getMessage());
             mv.setView("/error.jsp");
@@ -99,7 +99,7 @@ public class ParametreController {
             mv.addItem("parametres", getAllParametres());
             mv.addItem("parametre", new Parametre());
             mv.addItem("isEdit", false);
-            mv.setView("/parametre-form.jsp");
+            mv.setView("/parametre/form.jsp");
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors de la suppression : " + e.getMessage());
             mv.setView("/error.jsp");

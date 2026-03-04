@@ -2,7 +2,6 @@
 <%@ page import="java.util.List" %>
 <%@ page import="itu.back.model.Client" %>
 <%@ page import="itu.back.model.Hotel" %>
-<%@ page import="itu.back.model.Aeroport" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -18,35 +17,29 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #f5f7fa;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
         }
 
         .container {
             background: white;
             border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 40px;
-            max-width: 650px;
-            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         h1 {
-            color: #333;
+            color: #2c3e50;
             margin-bottom: 10px;
-            text-align: center;
             font-size: 2em;
         }
 
         .subtitle {
-            color: #666;
-            text-align: center;
-            margin-bottom: 25px;
-            font-size: 0.9em;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 0.95em;
         }
 
         .alert {
@@ -142,59 +135,34 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
         }
 
-        .btn-secondary {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .btn-secondary:hover {
-            background-color: #5a6268;
-            transform: translateY(-2px);
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
         .required {
             color: #e74c3c;
         }
 
-        #vehiclePreview {
-            background-color: #f0f9ff;
-            border: 1px solid #cce5ff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            display: none;
+        .help-text {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-top: 5px;
         }
 
-        #vehiclePreview.show {
-            display: block;
-        }
+        @media (max-width: 768px) {
+            .content-with-sidebar {
+                padding: 15px;
+            }
 
-        #vehiclePreview h4 {
-            color: #0056b3;
-            margin-bottom: 10px;
-        }
-
-        #vehiclePreview p {
-            color: #333;
-            font-size: 0.9em;
-            margin: 5px 0;
-        }
-
-        .loading {
-            color: #666;
-            font-style: italic;
-        }
-
-        @media (max-width: 600px) {
             .container {
                 padding: 25px;
             }
@@ -210,9 +178,12 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📅 Nouvelle Réservation</h1>
-        <p class="subtitle">Avec attribution automatique du véhicule optimal</p>
+    <%@ include file="../includes/sidebar.html" %>
+
+    <div class="content-with-sidebar">
+        <div class="container">
+            <h1>📅 Nouvelle Réservation</h1>
+            <p class="subtitle">Créer une nouvelle réservation de transport</p>
 
         <% 
             String success = (String) request.getAttribute("success");
@@ -226,13 +197,6 @@
         <% if (error != null) { %>
             <div class="alert alert-error">✗ <%= error %></div>
         <% } %>
-
-        <div class="info-box">
-            <h3>ℹ️ Processus de réservation</h3>
-            <p>La réservation sera créée avec le statut <strong>"Non assignée"</strong>. 
-               Vous pourrez ensuite assigner un véhicule depuis la page 
-               <a href="<%= request.getContextPath() %>/reservation/non-assignees">Réservations à assigner</a>.</p>
-        </div>
 
         <form action="<%= request.getContextPath() %>/reservation/save" method="POST">
             <div class="form-group">
@@ -255,25 +219,6 @@
             </div>
 
             <div class="form-group">
-                <label for="idAeroport">Aéroport d'arrivée <span class="required">*</span></label>
-                <select name="idAeroport" id="idAeroport" required>
-                    <option value="">-- Sélectionner l'aéroport --</option>
-                    <% 
-                        List<Aeroport> aeroports = (List<Aeroport>) request.getAttribute("aeroports");
-                        if (aeroports != null) {
-                            for (Aeroport aeroport : aeroports) {
-                    %>
-                        <option value="<%= aeroport.getId() %>">
-                            <%= aeroport.getCode() %> - <%= aeroport.getLibelle() %>
-                        </option>
-                    <% 
-                            }
-                        }
-                    %>
-                </select>
-            </div>
-
-            <div class="form-group">
                 <label for="idHotel">Hôtel de destination <span class="required">*</span></label>
                 <select name="idHotel" id="idHotel" required>
                     <option value="">-- Sélectionner un hôtel --</option>
@@ -283,7 +228,7 @@
                             for (Hotel hotel : hotels) {
                     %>
                         <option value="<%= hotel.getId() %>">
-                            <%= hotel.getNom() %> - <%= hotel.getVille() %>, <%= hotel.getPays() %>
+                            <%= hotel.getNom() %> - <%= hotel.getVille() %>
                         </option>
                     <% 
                             }
@@ -295,64 +240,26 @@
             <div class="form-group">
                 <label for="nombrePassage">Nombre de passagers <span class="required">*</span></label>
                 <input type="number" name="nombrePassage" id="nombrePassage" 
-                       min="1" max="50" value="1" required onchange="checkVehicleOptimal()">
-                
-                <div id="vehiclePreview">
-                    <h4>🚗 Véhicule qui sera assigné</h4>
-                    <p id="vehicleInfo">Entrez le nombre de passagers pour voir le véhicule optimal</p>
-                </div>
+                       min="1" max="50" value="1" required>
+                <p class="help-text">Nombre de personnes à transporter</p>
             </div>
 
             <div class="form-group">
-                <label for="dateHeureArrive">Date et heure d'arrivée à l'aéroport <span class="required">*</span></label>
+                <label for="dateHeureArrive">Date et heure d'arrivée <span class="required">*</span></label>
                 <input type="datetime-local" name="dateHeureArrive" id="dateHeureArrive" required>
+                <p class="help-text">Date et heure prévue d'arrivée à destination</p>
             </div>
 
             <div class="btn-container">
-                <button type="submit" class="btn-primary">Enregistrer la réservation</button>
+                <button type="submit" class="btn-primary">💾 Enregistrer la réservation</button>
             </div>
         </form>
+        </div>
     </div>
 
     <script>
         // Définir la date minimale à aujourd'hui
         document.getElementById('dateHeureArrive').min = new Date().toISOString().slice(0, 16);
-
-        // Vérifier le véhicule optimal quand le nombre de passagers change
-        function checkVehicleOptimal() {
-            const nombrePassagers = document.getElementById('nombrePassage').value;
-            const preview = document.getElementById('vehiclePreview');
-            const info = document.getElementById('vehicleInfo');
-
-            if (nombrePassagers && nombrePassagers > 0) {
-                preview.classList.add('show');
-                info.innerHTML = '<span class="loading">Recherche du véhicule optimal...</span>';
-
-                fetch('<%= request.getContextPath() %>/api/vehicule/optimal?nombrePassagers=' + nombrePassagers)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 200 && data.data) {
-                            const v = data.data;
-                            let carburant = v.typeCarburant ? v.typeCarburant.nom : 'N/A';
-                            info.innerHTML = '<strong>' + v.marque + ' ' + v.modele + '</strong><br/>' +
-                                'Places: ' + v.nombrePlaces + ' | Carburant: ' + carburant + '<br/>' +
-                                'Vitesse moyenne: ' + v.vitesseMoyenne + ' km/h';
-                        } else {
-                            info.innerHTML = '❌ Aucun véhicule disponible pour ' + nombrePassagers + ' passagers';
-                        }
-                    })
-                    .catch(error => {
-                        info.innerHTML = '⚠️ Erreur lors de la recherche';
-                    });
-            } else {
-                preview.classList.remove('show');
-            }
-        }
-
-        // Vérifier au chargement de la page
-        document.addEventListener('DOMContentLoaded', function() {
-            checkVehicleOptimal();
-        });
     </script>
 </body>
 </html>

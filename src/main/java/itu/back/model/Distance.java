@@ -4,25 +4,31 @@ import java.math.BigDecimal;
 
 public class Distance {
     private int id;
-    private int idFrom;
-    private int idTo;
-    private BigDecimal valeur; // en km
+    private Integer idFromHotel; // Peut être NULL si départ depuis aéroport
+    private Integer idFromAeroport; // Peut être NULL si départ depuis hôtel
+    private int idTo; // ID de l'hôtel de destination (NOT NULL)
+    private BigDecimal valeur; // Distance en km
+
+    // Objets liés (pour jointures)
+    private Hotel hotelFrom;
     private Aeroport aeroportFrom;
-    private Aeroport aeroportTo;
+    private Hotel hotelTo;
 
     // Constructeurs
     public Distance() {
     }
 
-    public Distance(int id, int idFrom, int idTo, BigDecimal valeur) {
+    public Distance(int id, Integer idFromHotel, Integer idFromAeroport, int idTo, BigDecimal valeur) {
         this.id = id;
-        this.idFrom = idFrom;
+        this.idFromHotel = idFromHotel;
+        this.idFromAeroport = idFromAeroport;
         this.idTo = idTo;
         this.valeur = valeur;
     }
 
-    public Distance(int idFrom, int idTo, BigDecimal valeur) {
-        this.idFrom = idFrom;
+    public Distance(Integer idFromHotel, Integer idFromAeroport, int idTo, BigDecimal valeur) {
+        this.idFromHotel = idFromHotel;
+        this.idFromAeroport = idFromAeroport;
         this.idTo = idTo;
         this.valeur = valeur;
     }
@@ -36,12 +42,20 @@ public class Distance {
         this.id = id;
     }
 
-    public int getIdFrom() {
-        return idFrom;
+    public Integer getIdFromHotel() {
+        return idFromHotel;
     }
 
-    public void setIdFrom(int idFrom) {
-        this.idFrom = idFrom;
+    public void setIdFromHotel(Integer idFromHotel) {
+        this.idFromHotel = idFromHotel;
+    }
+
+    public Integer getIdFromAeroport() {
+        return idFromAeroport;
+    }
+
+    public void setIdFromAeroport(Integer idFromAeroport) {
+        this.idFromAeroport = idFromAeroport;
     }
 
     public int getIdTo() {
@@ -60,6 +74,14 @@ public class Distance {
         this.valeur = valeur;
     }
 
+    public Hotel getHotelFrom() {
+        return hotelFrom;
+    }
+
+    public void setHotelFrom(Hotel hotelFrom) {
+        this.hotelFrom = hotelFrom;
+    }
+
     public Aeroport getAeroportFrom() {
         return aeroportFrom;
     }
@@ -68,16 +90,17 @@ public class Distance {
         this.aeroportFrom = aeroportFrom;
     }
 
-    public Aeroport getAeroportTo() {
-        return aeroportTo;
+    public Hotel getHotelTo() {
+        return hotelTo;
     }
 
-    public void setAeroportTo(Aeroport aeroportTo) {
-        this.aeroportTo = aeroportTo;
+    public void setHotelTo(Hotel hotelTo) {
+        this.hotelTo = hotelTo;
     }
 
     @Override
     public String toString() {
-        return "Distance{id=" + id + ", idFrom=" + idFrom + ", idTo=" + idTo + ", valeur=" + valeur + "}";
+        return "Distance{id=" + id + ", idFromHotel=" + idFromHotel + ", idFromAeroport=" + idFromAeroport + ", idTo="
+                + idTo + ", valeur=" + valeur + "}";
     }
 }

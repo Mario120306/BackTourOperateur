@@ -30,7 +30,7 @@ public class VehiculeController {
         try {
             List<Vehicule> vehicules = getAllVehicules();
             mv.addItem("vehicules", vehicules);
-            mv.setView("/vehicule-list.jsp");
+            mv.setView("/vehicule/list.jsp");
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors du chargement des véhicules : " + e.getMessage());
             mv.setView("/error.jsp");
@@ -59,7 +59,7 @@ public class VehiculeController {
             mv.addItem("typesCarburant", typesCarburant);
             mv.addItem("vehicule", new Vehicule());
             mv.addItem("isEdit", false);
-            mv.setView("/vehicule-form.jsp");
+            mv.setView("/vehicule/form.jsp");
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors du chargement du formulaire : " + e.getMessage());
             mv.setView("/error.jsp");
@@ -82,7 +82,7 @@ public class VehiculeController {
             mv.addItem("typesCarburant", typesCarburant);
             mv.addItem("vehicule", vehicule);
             mv.addItem("isEdit", true);
-            mv.setView("/vehicule-form.jsp");
+            mv.setView("/vehicule/form.jsp");
         } catch (SQLException e) {
             mv.addItem("error", "Erreur : " + e.getMessage());
             mv.setView("/error.jsp");
@@ -126,7 +126,7 @@ public class VehiculeController {
             // Rediriger vers la liste
             List<Vehicule> vehicules = getAllVehicules();
             mv.addItem("vehicules", vehicules);
-            mv.setView("/vehicule-list.jsp");
+            mv.setView("/vehicule/list.jsp");
 
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors de l'enregistrement : " + e.getMessage());
@@ -176,7 +176,7 @@ public class VehiculeController {
             // Rediriger vers la liste
             List<Vehicule> vehicules = getAllVehicules();
             mv.addItem("vehicules", vehicules);
-            mv.setView("/vehicule-list.jsp");
+            mv.setView("/vehicule/list.jsp");
 
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors de la modification : " + e.getMessage());
@@ -213,7 +213,7 @@ public class VehiculeController {
             // Rediriger vers la liste
             List<Vehicule> vehicules = getAllVehicules();
             mv.addItem("vehicules", vehicules);
-            mv.setView("/vehicule-list.jsp");
+            mv.setView("/vehicule/list.jsp");
 
         } catch (SQLException e) {
             mv.addItem("error", "Erreur lors de la suppression : " + e.getMessage());
