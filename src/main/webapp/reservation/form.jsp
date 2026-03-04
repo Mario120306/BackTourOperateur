@@ -178,7 +178,7 @@
     </style>
 </head>
 <body>
-    <%@ include file="../includes/sidebar.html" %>
+    <%@ include file="../includes/sidebar.jsp" %>
 
     <div class="content-with-sidebar">
         <div class="container">

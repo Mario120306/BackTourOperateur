@@ -1,3 +1,4 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
 <style>
     .sidebar {
         position: fixed;
@@ -119,56 +120,56 @@
     }
 </style>
 
-<button class="mobile-toggle" onclick="toggleSidebar()">☰ Menu</button>
+<button class="mobile-toggle" onclick="toggleSidebar()">&#9776; Menu</button>
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <h2>🚐 Tour Operator</h2>
-        <p>Gestion & Simulation</p>
+        <h2>&#128656; Tour Operator</h2>
+        <p>Gestion &amp; Simulation</p>
     </div>
 
-    <div class="menu-section">Réservations</div>
+    <div class="menu-section">RESERVATIONS</div>
     <ul class="sidebar-menu">
         <li>
-            <a href="${pageContext.request.contextPath}/reservation/form">
-                <i>➕</i> Nouvelle réservation
+            <a href="<%= request.getContextPath() %>/reservation/form">
+                <i>&#10133;</i> Nouvelle reservation
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/reservation/par-date/form">
-                <i>📅</i> Simulation par date
+            <a href="<%= request.getContextPath() %>/reservation/par-date/form">
+                <i>&#128197;</i> Simulation par date
             </a>
         </li>
     </ul>
 
-    <div class="menu-section">Véhicules</div>
+    <div class="menu-section">VEHICULES</div>
     <ul class="sidebar-menu">
         <li>
-            <a href="${pageContext.request.contextPath}/vehicule/form">
-                <i>🚗</i> Nouveau véhicule
+            <a href="<%= request.getContextPath() %>/vehicule/form">
+                <i>&#128663;</i> Nouveau vehicule
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/vehicule/list">
-                <i>🚙</i> Liste des véhicules
-            </a>
-        </li>
-    </ul>
-
-    <div class="menu-section">Paramètres</div>
-    <ul class="sidebar-menu">
-        <li>
-            <a href="${pageContext.request.contextPath}/parametre/form">
-                <i>⚙️</i> Configuration
+            <a href="<%= request.getContextPath() %>/vehicule/list">
+                <i>&#128665;</i> Liste des vehicules
             </a>
         </li>
     </ul>
 
-    <div class="menu-section">Simulation</div>
+    <div class="menu-section">PARAMETRES</div>
     <ul class="sidebar-menu">
         <li>
-            <a href="${pageContext.request.contextPath}/simulation/assignement">
-                <i>🎯</i> Simulation d'assignement
+            <a href="<%= request.getContextPath() %>/parametre/form">
+                <i>&#9881;</i> Configuration
+            </a>
+        </li>
+    </ul>
+
+    <div class="menu-section">SIMULATION</div>
+    <ul class="sidebar-menu">
+        <li>
+            <a href="<%= request.getContextPath() %>/simulation/assignement">
+                <i>&#127919;</i> Simulation d'assignement
             </a>
         </li>
     </ul>
@@ -179,20 +180,19 @@
         document.getElementById('sidebar').classList.toggle('mobile-open');
     }
 
-    // Fermer la sidebar sur mobile quand on clique sur un lien
-    document.querySelectorAll('.sidebar-menu a').forEach(link => {
-        link.addEventListener('click', () => {
+    document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
+        link.addEventListener('click', function() {
             if (window.innerWidth <= 768) {
                 document.getElementById('sidebar').classList.remove('mobile-open');
             }
         });
     });
 
-    // Marquer l'élément actif
-    document.addEventListener('DOMContentLoaded', () => {
-        const currentPath = window.location.pathname;
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href'))) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
+            var href = link.getAttribute('href');
+            if (href && currentPath.indexOf(href) !== -1) {
                 link.classList.add('active');
             }
         });

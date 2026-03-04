@@ -1,3 +1,4 @@
+-- Active: 1743734403458@@127.0.0.1@5432@tour_operateur
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
@@ -24,24 +25,26 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
+            display: flex;
         }
 
         .content-with-sidebar {
             display: flex;
+            width: 100%;
             min-height: 100vh;
         }
 
         .main-content {
             flex: 1;
             margin-left: 280px;
-            padding: 40px 60px;
-            max-width: calc(100% - 280px);
-            width: 100%;
+            padding: 40px;
+            width: calc(100% - 280px);
         }
 
         .content-wrapper {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
+            width: 100%;
         }
 
         @media (max-width: 768px) {
@@ -123,6 +126,70 @@
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
 
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
+        }
+
+        .btn-save:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+            color: white;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(237, 137, 54, 0.3);
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
+        }
+
+        .btn-reset:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         .results-header {
             background: white;
             padding: 20px 25px;
@@ -151,19 +218,20 @@
         .vehicule-card {
             background: white;
             border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
             border-left: 5px solid #667eea;
+            width: 100%;
         }
 
         .vehicule-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #f7fafc;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
         }
 
         .vehicule-info {
@@ -226,6 +294,105 @@
 
         .timing-duree {
             color: #ed8936;
+        }
+
+        .trajet-details {
+            margin-top: 20px;
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            width: 100%;
+        }
+
+        .trajet-title {
+            color: #2d3748;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .segments-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .segment {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .segment-route {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .segment-from, .segment-to {
+            font-weight: 600;
+            color: #2d3748;
+            font-size: 1em;
+        }
+
+        .segment-arrow {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .segment-info {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .segment-distance {
+            background: #e6f3ff;
+            color: #0066cc;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .segment-duration {
+            background: #fff3e0;
+            color: #e65100;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .segment {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .segment-route {
+                width: 100%;
+            }
+
+            .segment-info {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .trajet-details {
+                padding: 15px;
+            }
         }
 
         .reservation-count {
@@ -397,7 +564,7 @@
     </style>
 </head>
 <body>
-    <%@ include file="../includes/sidebar.html" %>
+    <%@ include file="../includes/sidebar.jsp" %>
     
     <div class="content-with-sidebar">
         <div class="main-content">
@@ -429,13 +596,23 @@
             %>
                 <div class="results-header">
                     <h2>Simulation du <%= dateRecherche %></h2>
-                    <div>
+                    <div class="header-actions">
                         <span class="badge"><%= nombreVehicules != null ? nombreVehicules : 0 %> véhicule(s) utilisé(s)</span>
                         <span class="badge" style="margin-left: 10px; background: #48bb78;"><%= nombreReservationsAssignees != null ? nombreReservationsAssignees : 0 %> / <%= nombreReservationsTotal != null ? nombreReservationsTotal : 0 %> assignée(s)</span>
                         <% if (nombreReservationsNonAssignees != null && nombreReservationsNonAssignees > 0) { %>
                             <span class="badge" style="margin-left: 10px; background: #ffc107; color: #333;"><%= nombreReservationsNonAssignees %> non assignée(s)</span>
                         <% } %>
                     </div>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="action-buttons">
+                    <button type="button" class="btn-save" onclick="enregistrerSimulation('<%= dateRecherche %>')">
+                        💾 Enregistrer la simulation
+                    </button>
+                    <button type="button" class="btn-reset" onclick="reinitialiserSimulation('<%= dateRecherche %>')">
+                        🔄 Réinitialiser les assignations
+                    </button>
                 </div>
 
                 <!-- Alerte pour les réservations non assignées -->
@@ -509,9 +686,46 @@
                                 </div>
                                 <div class="timing-item">
                                     <div class="timing-label">Durée Totale</div>
-                                    <div class="timing-value timing-duree">⏱️ <%= infosTrajet.getDureeTrajetMinutes() / 60 %>h<%= infosTrajet.getDureeTrajetMinutes() % 60 > 0 ? String.format("%02d", infosTrajet.getDureeTrajetMinutes() % 60) : "00" %></div>
+                                    <div class="timing-value timing-duree">⏱️ <% 
+                                        int dureeMin = infosTrajet.getDureeTrajetMinutes();
+                                        if (dureeMin < 60) {
+                                            out.print(dureeMin + " min");
+                                        } else {
+                                            int heures = dureeMin / 60;
+                                            int minutes = dureeMin % 60;
+                                            if (minutes > 0) {
+                                                out.print(heures + "h" + String.format("%02d", minutes));
+                                            } else {
+                                                out.print(heures + "h00");
+                                            }
+                                        }
+                                    %></div>
                                 </div>
                             </div>
+
+                            <!-- Détails du trajet segment par segment -->
+                            <% if (infosTrajet.getSegments() != null && !infosTrajet.getSegments().isEmpty()) { %>
+                                <div class="trajet-details">
+                                    <h4 class="trajet-title">📍 Détails du trajet</h4>
+                                    <div class="segments-container">
+                                        <% for (int i = 0; i < infosTrajet.getSegments().size(); i++) {
+                                            SimulationService.SegmentTrajet segment = infosTrajet.getSegments().get(i);
+                                        %>
+                                            <div class="segment">
+                                                <div class="segment-route">
+                                                    <span class="segment-from"><%= segment.getOrigine() %></span>
+                                                    <span class="segment-arrow">→</span>
+                                                    <span class="segment-to"><%= segment.getDestination() %></span>
+                                                </div>
+                                                <div class="segment-info">
+                                                    <span class="segment-distance">📏 <%= String.format("%.1f", segment.getDistanceKm()) %> km</span>
+                                                    <span class="segment-duration">⏱️ <%= segment.getDureeMinutes() %> min</span>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
                         <% } %>
 
                         <% if (!reservations.isEmpty()) { %>
@@ -580,5 +794,81 @@
             </div>
         </div>
     </div>
+
+<script>
+    function enregistrerSimulation(date) {
+        if (!confirm('Voulez-vous vraiment enregistrer cette simulation ?\nCela assignera les véhicules aux réservations.')) {
+            return;
+        }
+        
+        var btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Enregistrement...';
+        
+        fetch('<%= request.getContextPath() %>/simulation/enregistrer?date=' + date, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success || data.data) {
+                var result = data.data || data;
+                alert('✅ ' + result.message + '\n\n' + 
+                      'Assignations enregistrées: ' + result.nbAssignations + '\n' +
+                      'Non assignées: ' + result.nbNonAssignees);
+                location.reload();
+            } else {
+                alert('❌ Erreur: ' + (data.message || 'Erreur inconnue'));
+                btn.disabled = false;
+                btn.innerHTML = '💾 Enregistrer la simulation';
+            }
+        })
+        .catch(function(error) {
+            alert('❌ Erreur de connexion: ' + error.message);
+            btn.disabled = false;
+            btn.innerHTML = '💾 Enregistrer la simulation';
+        });
+    }
+    
+    function reinitialiserSimulation(date) {
+        if (!confirm('Voulez-vous vraiment réinitialiser les assignations pour cette date ?\nTous les véhicules seront désassignés.')) {
+            return;
+        }
+        
+        var btn = event.target;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Réinitialisation...';
+        
+        fetch('<%= request.getContextPath() %>/simulation/reinitialiser?date=' + date, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.success || data.data) {
+                var result = data.data || data;
+                alert('✅ ' + result.message + '\n\nRéservations modifiées: ' + result.nbModifiees);
+                location.reload();
+            } else {
+                alert('❌ Erreur: ' + (data.message || 'Erreur inconnue'));
+                btn.disabled = false;
+                btn.innerHTML = '🔄 Réinitialiser les assignations';
+            }
+        })
+        .catch(function(error) {
+            alert('❌ Erreur de connexion: ' + error.message);
+            btn.disabled = false;
+            btn.innerHTML = '🔄 Réinitialiser les assignations';
+        });
+    }
+</script>
 </body>
 </html>
