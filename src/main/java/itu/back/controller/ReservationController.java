@@ -415,4 +415,87 @@ public class ReservationController {
 
         return vehicules;
     }
+
+    /**
+     * Endpoint API pour enregistrer la simulation (assigner les véhicules aux
+     * réservations)
+     */
+    @PostMapping("/simulation/enregistrer")
+    @Json
+    public JsonResponse enregistrerSimulation(@RequestParam("date") String dateStr) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            try {
+                // Récupérer les réservations pour cette date
+                List<Reservation> reservations = getReservationsByDate(dateStr);
+
+                // Récupérer tous les véhicules
+                List<Vehicule> vehicules = getAllVehicules();
+
+                // Simuler l'assignation
+                SimulationService.ResultatSimulation resultat = SimulationService.simulerAssignation(reservations,
+                        vehicules, conn);
+
+                // Enregistrer les assignations en base de données
+                Map<Vehicule, List<Reservation>> assignations = resultat.getVehiculesAvecReservations();
+                int nbAssignations = 0;
+
+                String updateSql = "UPDATE reservation SET id_vehicule = ? WHERE id = ?";
+                PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+
+                for (Map.Entry<Vehicule, List<Reservation>> entry : assignations.entrySet()) {
+                    Vehicule vehicule = entry.getKey();
+                    List<Reservation> reservationsVehicule = entry.getValue();
+
+                    for (Reservation reservation : reservationsVehicule) {
+                        updateStmt.setInt(1, vehicule.getId());
+                        updateStmt.setInt(2, reservation.getId());
+                        updateStmt.executeUpdate();
+                        nbAssignations++;
+                    }
+                }
+
+                updateStmt.close();
+
+                return JsonResponse.success(Map.of(
+                        "message", "Simulation enregistrée avec succès",
+                        "nbAssignations", nbAssignations,
+                        "nbNonAssignees", resultat.getReservationsNonAssignees().size()));
+
+            } finally {
+                DatabaseConnection.closeConnection(conn);
+            }
+
+        } catch (Exception e) {
+            return JsonResponse.serverError("Erreur lors de l'enregistrement : " + e.getMessage());
+        }
+    }
+
+    /**
+     * Endpoint API pour réinitialiser les assignations d'une date
+     */
+    @PostMapping("/simulation/reinitialiser")
+    @Json
+    public JsonResponse reinitialiserSimulation(@RequestParam("date") String dateStr) {
+        try {
+            Connection conn = DatabaseConnection.getConnection();
+            try {
+                String sql = "UPDATE reservation SET id_vehicule = NULL WHERE DATE(date_heure_arrive) = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setDate(1, java.sql.Date.valueOf(dateStr));
+                int nbModifiees = stmt.executeUpdate();
+                stmt.close();
+
+                return JsonResponse.success(Map.of(
+                        "message", "Assignations réinitialisées",
+                        "nbModifiees", nbModifiees));
+
+            } finally {
+                DatabaseConnection.closeConnection(conn);
+            }
+
+        } catch (Exception e) {
+            return JsonResponse.serverError("Erreur lors de la réinitialisation : " + e.getMessage());
+        }
+    }
 }

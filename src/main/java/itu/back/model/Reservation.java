@@ -8,10 +8,12 @@ public class Reservation {
     private int nombrePassage;
     private Timestamp dateHeureArrive;
     private int idHotel;
+    private Integer idVehicule;
 
     // Relations (pour l'affichage)
     private Client client;
     private Hotel hotel;
+    private Vehicule vehicule;
 
     // Constructeurs
     public Reservation() {
@@ -80,5 +82,21 @@ public class Reservation {
 
     public void setHotel(Hotel hotel) {
         this.hotel = hotel;
+    }
+
+    public Integer getIdVehicule() {
+        return idVehicule;
+    }
+
+    public void setIdVehicule(Integer idVehicule) {
+        this.idVehicule = idVehicule;
+    }
+
+    public Vehicule getVehicule() {
+        return vehicule;
+    }
+
+    public void setVehicule(Vehicule vehicule) {
+        this.vehicule = vehicule;
     }
 }

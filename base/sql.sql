@@ -35,8 +35,10 @@ CREATE TABLE reservation (
     nombre_passage INT NOT NULL,
     date_heure_arrive TIMESTAMP NOT NULL,
     id_hotel INT NOT NULL,
+    id_vehicule INT,
     FOREIGN KEY (id_client) REFERENCES client(id),
-    FOREIGN KEY (id_hotel) REFERENCES hotel(id)
+    FOREIGN KEY (id_hotel) REFERENCES hotel(id),
+    FOREIGN KEY (id_vehicule) REFERENCES vehicule(id)
 );
 CREATE TABLE token (
     id SERIAL PRIMARY KEY,

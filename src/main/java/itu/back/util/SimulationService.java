@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,16 +59,16 @@ public class SimulationService {
         public void setReservationsNonAssignees(List<Reservation> reservationsNonAssignees) {
             this.reservationsNonAssignees = reservationsNonAssignees;
         }
-        
+
         public Map<Vehicule, InfosTrajet> getInfosTrajetParVehicule() {
             return infosTrajetParVehicule;
         }
-        
+
         public void setInfosTrajetParVehicule(Map<Vehicule, InfosTrajet> infosTrajetParVehicule) {
             this.infosTrajetParVehicule = infosTrajetParVehicule;
         }
     }
-    
+
     /**
      * Classe pour stocker les informations de trajet d'un véhicule
      */
@@ -77,23 +76,63 @@ public class SimulationService {
         private Timestamp heureDepart;
         private Timestamp heureRetour;
         private int dureeTrajetMinutes;
-        
-        public InfosTrajet(Timestamp heureDepart, Timestamp heureRetour, int dureeTrajetMinutes) {
+        private List<SegmentTrajet> segments;
+
+        public InfosTrajet(Timestamp heureDepart, Timestamp heureRetour, int dureeTrajetMinutes,
+                List<SegmentTrajet> segments) {
             this.heureDepart = heureDepart;
             this.heureRetour = heureRetour;
             this.dureeTrajetMinutes = dureeTrajetMinutes;
+            this.segments = segments;
         }
-        
+
         public Timestamp getHeureDepart() {
             return heureDepart;
         }
-        
+
         public Timestamp getHeureRetour() {
             return heureRetour;
         }
-        
+
         public int getDureeTrajetMinutes() {
             return dureeTrajetMinutes;
+        }
+
+        public List<SegmentTrajet> getSegments() {
+            return segments;
+        }
+    }
+
+    /**
+     * Classe pour stocker les détails d'un segment de trajet
+     */
+    public static class SegmentTrajet {
+        private String origine;
+        private String destination;
+        private BigDecimal distanceKm;
+        private int dureeMinutes;
+
+        public SegmentTrajet(String origine, String destination, BigDecimal distanceKm, int dureeMinutes) {
+            this.origine = origine;
+            this.destination = destination;
+            this.distanceKm = distanceKm;
+            this.dureeMinutes = dureeMinutes;
+        }
+
+        public String getOrigine() {
+            return origine;
+        }
+
+        public String getDestination() {
+            return destination;
+        }
+
+        public BigDecimal getDistanceKm() {
+            return distanceKm;
+        }
+
+        public int getDureeMinutes() {
+            return dureeMinutes;
         }
     }
 
@@ -107,11 +146,13 @@ public class SimulationService {
         Timestamp heureDepart;
         Timestamp heureRetour;
         int dureeTrajetMinutes;
+        List<SegmentTrajet> segments;
 
         public VehiculeAvecCapacite(Vehicule v) {
             this.vehicule = v;
             this.placesRestantes = v.getNombrePlaces();
             this.reservations = new ArrayList<>();
+            this.segments = new ArrayList<>();
         }
 
         public boolean peutAccueillir(int nombrePassagers) {
@@ -122,9 +163,10 @@ public class SimulationService {
             reservations.add(r);
             placesRestantes -= r.getNombrePassage();
         }
-        
+
         public Timestamp getHeureArriveePremiere() {
-            if (reservations.isEmpty()) return null;
+            if (reservations.isEmpty())
+                return null;
             return reservations.get(0).getDateHeureArrive();
         }
     }
@@ -179,42 +221,47 @@ public class SimulationService {
         // Liste pour garder trace des réservations qui n'ont pas pu être assignées
         List<Reservation> reservationsImpossiblesAAssigner = new ArrayList<>();
 
-        // ETAPE 1 : Trier par heure d'arrivée puis par nombre de passagers (décroissant)
+        // ETAPE 1 : Trier par heure d'arrivée puis par nombre de passagers
+        // (décroissant)
         reservationsNonAssignees.sort((r1, r2) -> {
             // D'abord par heure d'arrivée
             int compareHeure = r1.getDateHeureArrive().compareTo(r2.getDateHeureArrive());
-            if (compareHeure != 0) return compareHeure;
+            if (compareHeure != 0)
+                return compareHeure;
             // Ensuite par nombre de passagers (décroissant)
             return Integer.compare(r2.getNombrePassage(), r1.getNombrePassage());
         });
 
-        // ETAPE 2 & 3 : Assigner les réservations (uniquement celles avec la même heure)
+        // ETAPE 2 & 3 : Assigner les réservations (uniquement celles avec la même
+        // heure)
         while (!reservationsNonAssignees.isEmpty()) {
             Reservation reservation = reservationsNonAssignees.get(0);
             boolean assignee = false;
 
             // Chercher un véhicule disponible avec assez de places
             for (VehiculeAvecCapacite vehiculeAvecCap : vehiculesDisponibles) {
-                // Vérifier si le véhicule est vide OU s'il a déjà des réservations à la même heure
-                boolean memeHeure = vehiculeAvecCap.reservations.isEmpty() || 
-                                   reservation.getDateHeureArrive().equals(vehiculeAvecCap.getHeureArriveePremiere());
-                
+                // Vérifier si le véhicule est vide OU s'il a déjà des réservations à la même
+                // heure
+                boolean memeHeure = vehiculeAvecCap.reservations.isEmpty() ||
+                        reservation.getDateHeureArrive().equals(vehiculeAvecCap.getHeureArriveePremiere());
+
                 if (memeHeure && vehiculeAvecCap.peutAccueillir(reservation.getNombrePassage())) {
                     // Assigner la réservation
                     vehiculeAvecCap.ajouterReservation(reservation);
                     reservationsNonAssignees.remove(0);
                     assignee = true;
 
-                    // OPTIMISATION : Chercher d'autres réservations à ajouter si le véhicule n'est pas plein
+                    // OPTIMISATION : Chercher d'autres réservations à ajouter si le véhicule n'est
+                    // pas plein
                     // MAIS UNIQUEMENT celles avec la même heure d'arrivée
                     if (vehiculeAvecCap.placesRestantes > 0) {
                         Timestamp heureVehicule = vehiculeAvecCap.getHeureArriveePremiere();
                         List<Reservation> aSupprimer = new ArrayList<>();
-                        
+
                         for (Reservation autreReservation : reservationsNonAssignees) {
                             // Ne prendre que les réservations à la même heure
                             if (autreReservation.getDateHeureArrive().equals(heureVehicule) &&
-                                vehiculeAvecCap.peutAccueillir(autreReservation.getNombrePassage())) {
+                                    vehiculeAvecCap.peutAccueillir(autreReservation.getNombrePassage())) {
                                 vehiculeAvecCap.ajouterReservation(autreReservation);
                                 aSupprimer.add(autreReservation);
 
@@ -243,11 +290,12 @@ public class SimulationService {
             if (!vehiculeAvecCap.reservations.isEmpty()) {
                 calculerHoraires(vehiculeAvecCap, conn);
                 vehiculesAvecReservations.put(vehiculeAvecCap.vehicule, vehiculeAvecCap.reservations);
-                
+
                 // Stocker les infos de trajet
                 if (vehiculeAvecCap.heureDepart != null && vehiculeAvecCap.heureRetour != null) {
-                    infosTrajetParVehicule.put(vehiculeAvecCap.vehicule, 
-                        new InfosTrajet(vehiculeAvecCap.heureDepart, vehiculeAvecCap.heureRetour, vehiculeAvecCap.dureeTrajetMinutes));
+                    infosTrajetParVehicule.put(vehiculeAvecCap.vehicule,
+                            new InfosTrajet(vehiculeAvecCap.heureDepart, vehiculeAvecCap.heureRetour,
+                                    vehiculeAvecCap.dureeTrajetMinutes, vehiculeAvecCap.segments));
                 }
             }
         }
@@ -269,7 +317,8 @@ public class SimulationService {
 
     /**
      * Calcule les horaires de départ et retour pour un véhicule et ses réservations
-     * Trajet : Aéroport → Hôtel1 → Hôtel2 → ... → Aéroport
+     * Trajet optimisé : Aéroport → Hôtels (triés par distance puis alphabétique) →
+     * Aéroport
      * 
      * @param vehiculeAvecCap Véhicule avec ses réservations
      * @param conn            Connexion à la base de données
@@ -285,62 +334,182 @@ public class SimulationService {
 
         // Toutes les réservations ont la même heure d'arrivée
         Timestamp heureArrivee = reservations.get(0).getDateHeureArrive();
+        vehiculeAvecCap.segments = new ArrayList<>();
 
-        // Calculer le trajet complet : Aéroport (id=1) → Hôtel1 → Hôtel2 → ... → Aéroport
+        // Récupérer les hôtels uniques et leurs informations
+        Map<Integer, String> hotelsMap = new HashMap<>();
+        for (Reservation r : reservations) {
+            if (!hotelsMap.containsKey(r.getIdHotel())) {
+                hotelsMap.put(r.getIdHotel(), r.getHotel().getNom());
+            }
+        }
+
+        // Optimiser l'ordre des hôtels : plus courte distance d'abord, puis
+        // alphabétique
+        List<Integer> ordreHotels = optimiserOrdreHotels(conn, new ArrayList<>(hotelsMap.keySet()), hotelsMap);
+
+        // Calculer le trajet complet
         BigDecimal distanceTotale = BigDecimal.ZERO;
-        int pointDepart = -1; // -1 pour aéroport
-        int aeroportId = 1; // Aéroport Ivato par défaut
-
-        // Trajet : Aéroport → Hôtel1
-        if (!reservations.isEmpty()) {
-            int premierHotel = reservations.get(0).getIdHotel();
-            BigDecimal distance = getDistance(conn, null, aeroportId, premierHotel);
-            if (distance != null) {
-                distanceTotale = distanceTotale.add(distance);
-            }
-            pointDepart = premierHotel;
-        }
-
-        // Trajets inter-hôtels : Hôtel1 → Hôtel2 → Hôtel3 → ...
-        for (int i = 1; i < reservations.size(); i++) {
-            int hotelDestination = reservations.get(i).getIdHotel();
-            if (hotelDestination != pointDepart) { // Éviter les trajets inutiles
-                BigDecimal distance = getDistance(conn, pointDepart, null, hotelDestination);
-                if (distance != null) {
-                    distanceTotale = distanceTotale.add(distance);
-                }
-                pointDepart = hotelDestination;
-            }
-        }
-
-        // Trajet retour : DernierHôtel → Aéroport
-        if (pointDepart != -1) {
-            BigDecimal distanceRetour = getDistance(conn, pointDepart, null, aeroportId);
-            if (distanceRetour != null) {
-                distanceTotale = distanceTotale.add(distanceRetour);
-            }
-        }
-
-        // Calculer le temps de trajet total
         int vitesseMoyenne = vehicule.getVitesseMoyenne();
-        if (vitesseMoyenne > 0 && distanceTotale.compareTo(BigDecimal.ZERO) > 0) {
-            // Temps en heures = distance / vitesse
-            BigDecimal tempsHeures = distanceTotale.divide(new BigDecimal(vitesseMoyenne), 2, BigDecimal.ROUND_HALF_UP);
-            // Convertir en minutes
-            int tempsMinutes = tempsHeures.multiply(new BigDecimal(60)).intValue();
-            
-            // Ajouter 30 minutes de temps d'arrêt par hôtel (dépose passagers)
-            int tempsArretMinutes = 30 * reservations.size();
-            int tempsTotalMinutes = tempsMinutes + tempsArretMinutes;
+        int aeroportId = 1; // Aéroport Ivato
 
-            // Calculer l'heure de départ (on part avant pour arriver à l'heure)
-            vehiculeAvecCap.heureDepart = new Timestamp(heureArrivee.getTime() - (tempsTotalMinutes * 60 * 1000));
+        // Segment 1 : Aéroport → Premier Hôtel
+        if (!ordreHotels.isEmpty()) {
+            int premierHotel = ordreHotels.get(0);
+            String nomPremierHotel = hotelsMap.get(premierHotel);
+            BigDecimal distance = getDistance(conn, null, aeroportId, premierHotel);
 
-            // Calculer l'heure de retour (heure d'arrivée + temps retour)
-            vehiculeAvecCap.heureRetour = new Timestamp(heureArrivee.getTime() + (tempsTotalMinutes * 60 * 1000));
-            
-            vehiculeAvecCap.dureeTrajetMinutes = tempsTotalMinutes;
+            if (distance != null && vitesseMoyenne > 0) {
+                distanceTotale = distanceTotale.add(distance);
+                int dureeMinutes = calculerDureeMinutes(distance, vitesseMoyenne);
+                vehiculeAvecCap.segments
+                        .add(new SegmentTrajet("Aéroport Ivato", nomPremierHotel, distance, dureeMinutes));
+            }
         }
+
+        // Segments inter-hôtels : Hôtel1 → Hôtel2 → ...
+        for (int i = 0; i < ordreHotels.size() - 1; i++) {
+            int hotelDepart = ordreHotels.get(i);
+            int hotelArrivee = ordreHotels.get(i + 1);
+            String nomHotelDepart = hotelsMap.get(hotelDepart);
+            String nomHotelArrivee = hotelsMap.get(hotelArrivee);
+
+            BigDecimal distance = getDistance(conn, hotelDepart, null, hotelArrivee);
+            if (distance != null && vitesseMoyenne > 0) {
+                distanceTotale = distanceTotale.add(distance);
+                int dureeMinutes = calculerDureeMinutes(distance, vitesseMoyenne);
+                vehiculeAvecCap.segments
+                        .add(new SegmentTrajet(nomHotelDepart, nomHotelArrivee, distance, dureeMinutes));
+            } else {
+                // Distance non trouvée dans la base - utiliser une estimation (distance moyenne
+                // en ville)
+                BigDecimal distanceEstimee = new BigDecimal("3.0"); // 3 km par défaut
+                distanceTotale = distanceTotale.add(distanceEstimee);
+                int dureeMinutes = calculerDureeMinutes(distanceEstimee, vitesseMoyenne);
+                vehiculeAvecCap.segments
+                        .add(new SegmentTrajet(nomHotelDepart, nomHotelArrivee, distanceEstimee, dureeMinutes));
+            }
+        }
+
+        // Segment final : Dernier Hôtel → Aéroport
+        if (!ordreHotels.isEmpty()) {
+            int dernierHotel = ordreHotels.get(ordreHotels.size() - 1);
+            String nomDernierHotel = hotelsMap.get(dernierHotel);
+            BigDecimal distanceRetour = getDistance(conn, dernierHotel, null, aeroportId);
+
+            if (distanceRetour != null && vitesseMoyenne > 0) {
+                distanceTotale = distanceTotale.add(distanceRetour);
+                int dureeMinutes = calculerDureeMinutes(distanceRetour, vitesseMoyenne);
+                vehiculeAvecCap.segments
+                        .add(new SegmentTrajet(nomDernierHotel, "Aéroport Ivato", distanceRetour, dureeMinutes));
+            }
+        }
+
+        // Calculer le temps de trajet total en sommant les segments
+        if (vitesseMoyenne > 0 && !vehiculeAvecCap.segments.isEmpty()) {
+            // Calculer le temps pour arriver au premier hôtel (premier segment)
+            int tempsAllerPremierHotel = vehiculeAvecCap.segments.get(0).getDureeMinutes();
+
+            // Calculer le temps total de trajet (somme de tous les segments)
+            int tempsTrajetTotal = 0;
+            for (SegmentTrajet segment : vehiculeAvecCap.segments) {
+                tempsTrajetTotal += segment.getDureeMinutes();
+            }
+
+            // Calculer l'heure de départ : partir assez tôt pour arriver au premier hôtel à
+            // l'heure
+            vehiculeAvecCap.heureDepart = new Timestamp(heureArrivee.getTime() - (tempsAllerPremierHotel * 60 * 1000));
+
+            // Calculer l'heure de retour à l'aéroport
+            // = heure arrivée + temps pour les autres segments
+            int tempsApresArrivee = tempsTrajetTotal - tempsAllerPremierHotel;
+            vehiculeAvecCap.heureRetour = new Timestamp(heureArrivee.getTime() + (tempsApresArrivee * 60 * 1000));
+
+            vehiculeAvecCap.dureeTrajetMinutes = tempsTrajetTotal;
+        }
+    }
+
+    /**
+     * Optimise l'ordre des hôtels : plus courte distance d'abord, puis alphabétique
+     * Utilise un algorithme glouton pour minimiser la distance totale
+     * 
+     * @param conn      Connexion DB
+     * @param hotelIds  Liste des IDs d'hôtels à organiser
+     * @param hotelsMap Map ID → Nom d'hôtel
+     * @return Liste ordonnée des IDs d'hôtels
+     * @throws SQLException
+     */
+    private static List<Integer> optimiserOrdreHotels(Connection conn, List<Integer> hotelIds,
+            Map<Integer, String> hotelsMap) throws SQLException {
+        if (hotelIds.size() <= 1) {
+            return hotelIds;
+        }
+
+        List<Integer> ordreOptimal = new ArrayList<>();
+        List<Integer> restants = new ArrayList<>(hotelIds);
+        int aeroportId = 1;
+        int positionActuelle = -1; // -1 = aéroport
+
+        // Algorithme glouton : choisir le plus proche à chaque étape
+        while (!restants.isEmpty()) {
+            int meilleurHotel = -1;
+            BigDecimal meilleureDistance = null;
+            String meilleurNom = null;
+
+            for (int hotelId : restants) {
+                BigDecimal distance;
+                if (positionActuelle == -1) {
+                    // Depuis l'aéroport
+                    distance = getDistance(conn, null, aeroportId, hotelId);
+                } else {
+                    // Depuis le dernier hôtel
+                    distance = getDistance(conn, positionActuelle, null, hotelId);
+                }
+
+                if (distance != null) {
+                    // Priorité 1 : distance la plus courte
+                    // Priorité 2 : ordre alphabétique en cas d'égalité
+                    if (meilleureDistance == null ||
+                            distance.compareTo(meilleureDistance) < 0 ||
+                            (distance.compareTo(meilleureDistance) == 0 &&
+                                    hotelsMap.get(hotelId).compareToIgnoreCase(meilleurNom) < 0)) {
+                        meilleureDistance = distance;
+                        meilleurHotel = hotelId;
+                        meilleurNom = hotelsMap.get(hotelId);
+                    }
+                } else if (meilleureDistance == null) {
+                    // Si aucune distance n'est disponible pour aucun hôtel, prendre par ordre
+                    // alphabétique
+                    if (meilleurHotel == -1 || hotelsMap.get(hotelId).compareToIgnoreCase(meilleurNom) < 0) {
+                        meilleurHotel = hotelId;
+                        meilleurNom = hotelsMap.get(hotelId);
+                    }
+                }
+            }
+
+            if (meilleurHotel != -1) {
+                ordreOptimal.add(meilleurHotel);
+                restants.remove(Integer.valueOf(meilleurHotel));
+                positionActuelle = meilleurHotel;
+            } else {
+                // Cas extrême : ajouter tous les restants par ordre alphabétique
+                restants.sort((a, b) -> hotelsMap.get(a).compareToIgnoreCase(hotelsMap.get(b)));
+                ordreOptimal.addAll(restants);
+                break;
+            }
+        }
+
+        return ordreOptimal;
+    }
+
+    /**
+     * Calcule la durée en minutes pour une distance donnée
+     */
+    private static int calculerDureeMinutes(BigDecimal distanceKm, int vitesseMoyenneKmH) {
+        if (vitesseMoyenneKmH <= 0)
+            return 0;
+        BigDecimal heures = distanceKm.divide(new BigDecimal(vitesseMoyenneKmH), 4, BigDecimal.ROUND_HALF_UP);
+        return heures.multiply(new BigDecimal(60)).intValue();
     }
 
     /**
