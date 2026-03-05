@@ -12,30 +12,43 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --text-light: #ffffff;
+            --text-muted: #6b7280;
+            --text-dark: #1f2937;
+            --border-light: #e5e7eb;
+            --danger: #dc2626;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 30px;
         }
 
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 40px;
             max-width: 600px;
             width: 100%;
             text-align: center;
+            border: 1px solid var(--border-light);
         }
 
         h1 {
-            color: #e74c3c;
+            color: var(--danger);
             margin-bottom: 20px;
             font-size: 2em;
+            font-weight: 700;
         }
 
         .error-icon {
@@ -44,9 +57,9 @@
         }
 
         .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #fef2f2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
             padding: 20px;
             border-radius: 8px;
             margin-bottom: 30px;
@@ -55,21 +68,24 @@
         .btn {
             display: inline-block;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-secondary);
+            color: var(--text-light);
             text-decoration: none;
             border-radius: 8px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .btn:hover {
+            background: var(--bg-tertiary);
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
         }
     </style>
 </head>
 <body>
+    <%@ include file="../includes/sidebar.html" %>
+    <div class="content-with-sidebar">
     <div class="container">
         <div class="error-icon">⚠️</div>
         <h1>Une erreur s'est produite</h1>
@@ -77,6 +93,7 @@
             <%= request.getAttribute("error") != null ? request.getAttribute("error") : "Une erreur inattendue s'est produite." %>
         </div>
         <a href="<%= request.getContextPath() %>/reservation/form" class="btn">Retour au formulaire</a>
+    </div>
     </div>
 </body>
 </html>

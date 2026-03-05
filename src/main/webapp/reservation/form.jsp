@@ -15,68 +15,82 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --text-light: #ffffff;
+            --text-muted: #6b7280;
+            --text-dark: #1f2937;
+            --border-light: #e5e7eb;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
+            background: #ffffff;
             min-height: 100vh;
         }
 
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 40px;
             max-width: 800px;
             margin: 0 auto;
+            border: 1px solid #e5e7eb;
         }
 
         h1 {
-            color: #2c3e50;
+            color: var(--text-dark);
             margin-bottom: 10px;
             font-size: 2em;
+            font-weight: 700;
         }
 
         .subtitle {
-            color: #7f8c8d;
+            color: var(--text-muted);
             margin-bottom: 30px;
             font-size: 0.95em;
         }
 
         .alert {
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-weight: 500;
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: #ecfdf5;
+            color: var(--success);
+            border: 1px solid #a7f3d0;
         }
 
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #fef2f2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
         }
 
         .info-box {
-            background-color: #e7f3ff;
-            border: 1px solid #b3d9ff;
+            background-color: #f9fafb;
+            border: 1px solid var(--border-light);
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 25px;
         }
 
         .info-box h3 {
-            color: #0066cc;
+            color: var(--text-dark);
             font-size: 1em;
             margin-bottom: 8px;
         }
 
         .info-box p {
-            color: #004085;
+            color: var(--text-muted);
             font-size: 0.9em;
             line-height: 1.5;
         }
@@ -88,7 +102,7 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: var(--text-dark);
             font-weight: 600;
             font-size: 0.95em;
         }
@@ -96,18 +110,18 @@
         select, input {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-light);
             border-radius: 8px;
             font-size: 1em;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            background-color: #f9fafb;
         }
 
         select:focus, input:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--bg-secondary);
             background-color: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(22, 27, 34, 0.1);
         }
 
         select {
@@ -128,20 +142,21 @@
             font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
             text-align: center;
             display: inline-block;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
+            background: var(--bg-secondary);
+            color: var(--text-light);
         }
 
         .btn-primary:hover {
+            background: var(--bg-tertiary);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
         }
 
         .btn-primary:active {
@@ -149,12 +164,12 @@
         }
 
         .required {
-            color: #e74c3c;
+            color: var(--danger);
         }
 
         .help-text {
             font-size: 0.85em;
-            color: #7f8c8d;
+            color: var(--text-muted);
             margin-top: 5px;
         }
 

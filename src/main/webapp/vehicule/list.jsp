@@ -14,46 +14,63 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --bg-light: #f9fafb;
+            --accent-primary: #1f2937;
+            --accent-hover: #374151;
+            --text-light: #ffffff;
+            --text-muted: #6b7280;
+            --text-dark: #1f2937;
+            --border-light: #e5e7eb;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
-            padding: 20px;
+            padding: 30px;
         }
 
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 40px;
             max-width: 1200px;
             margin: 0 auto;
+            border: 1px solid #e5e7eb;
         }
 
         h1 {
-            color: #333;
+            color: var(--text-dark);
             margin-bottom: 30px;
             text-align: center;
             font-size: 2em;
+            font-weight: 700;
         }
 
         .alert {
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-weight: 500;
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: #ecfdf5;
+            color: var(--success);
+            border: 1px solid #a7f3d0;
         }
 
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #fef2f2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
         }
 
         .header-actions {
@@ -71,8 +88,8 @@
         }
 
         .stat-item {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-secondary);
+            color: var(--text-light);
             padding: 15px 25px;
             border-radius: 10px;
             text-align: center;
@@ -85,23 +102,24 @@
 
         .stat-item .label {
             font-size: 0.85em;
-            opacity: 0.9;
+            color: #d1d5db;
         }
 
         .btn-add {
             display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-secondary);
+            color: var(--text-light);
             padding: 14px 28px;
             text-decoration: none;
             border-radius: 8px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .btn-add:hover {
+            background: var(--bg-tertiary);
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
         }
 
         table {
@@ -113,12 +131,12 @@
         th, td {
             padding: 15px;
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #e5e7eb;
         }
 
         th {
-            background-color: #f8f9fa;
-            color: #555;
+            background-color: var(--bg-secondary);
+            color: var(--text-light);
             font-weight: 600;
             font-size: 0.9em;
             text-transform: uppercase;
@@ -134,7 +152,7 @@
         }
 
         tr:hover {
-            background-color: #f8f9fa;
+            background-color: #f9fafb;
         }
 
         .actions {
@@ -152,29 +170,29 @@
         }
 
         .btn-edit {
-            background-color: #ffc107;
-            color: #333;
+            background-color: var(--bg-tertiary);
+            color: var(--text-light);
         }
 
         .btn-edit:hover {
-            background-color: #e0a800;
+            background-color: var(--accent-hover);
             transform: translateY(-1px);
         }
 
         .btn-delete {
-            background-color: #dc3545;
+            background-color: var(--danger);
             color: white;
         }
 
         .btn-delete:hover {
-            background-color: #c82333;
+            background-color: #b91c1c;
             transform: translateY(-1px);
         }
 
         .empty-message {
             text-align: center;
             padding: 60px 40px;
-            color: #666;
+            color: var(--text-muted);
         }
 
         .empty-message .icon {
@@ -183,7 +201,7 @@
         }
 
         .empty-message h3 {
-            color: #333;
+            color: var(--text-dark);
             margin-bottom: 10px;
         }
 
@@ -196,13 +214,13 @@
         }
 
         .badge-info {
-            background-color: #e7f3ff;
-            color: #0066cc;
+            background-color: var(--bg-secondary);
+            color: var(--text-light);
         }
 
         .badge-success {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: var(--bg-tertiary);
+            color: var(--text-light);
         }
 
         @media (max-width: 768px) {
@@ -235,6 +253,8 @@
     </style>
 </head>
 <body>
+    <%@ include file="../includes/sidebar.html" %>
+    <div class="content-with-sidebar">
     <%
         List<Vehicule> vehicules = (List<Vehicule>) request.getAttribute("vehicules");
         int totalVehicules = vehicules != null ? vehicules.size() : 0;
@@ -315,6 +335,7 @@
                 <p>Commencez par ajouter votre premier véhicule</p>
             </div>
         <% } %>
+    </div>
     </div>
 </body>
 </html>
