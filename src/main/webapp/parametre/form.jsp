@@ -14,9 +14,21 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --text-light: #ffffff;
+            --text-muted: #6b7280;
+            --text-dark: #1f2937;
+            --border-light: #e5e7eb;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #ffffff;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -33,45 +45,47 @@
         }
 
         .container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             padding: 40px;
             width: 100%;
+            border: 1px solid var(--border-light);
         }
 
         h2 {
-            color: #444;
+            color: var(--text-dark);
             margin-bottom: 20px;
             font-size: 1.3em;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid var(--bg-secondary);
             padding-bottom: 10px;
         }
 
         h1 {
-            color: #333;
+            color: var(--text-dark);
             margin-bottom: 30px;
             text-align: center;
             font-size: 2em;
+            font-weight: 700;
         }
 
         .alert {
-            padding: 15px;
+            padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
             font-weight: 500;
         }
 
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: #ecfdf5;
+            color: var(--success);
+            border: 1px solid #a7f3d0;
         }
 
         .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: #fef2f2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
         }
 
         .form-group {
@@ -81,7 +95,7 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: var(--text-dark);
             font-weight: 600;
             font-size: 0.95em;
         }
@@ -89,19 +103,19 @@
         input[type="text"], textarea {
             width: 100%;
             padding: 12px 15px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid var(--border-light);
             border-radius: 8px;
             font-size: 1em;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
+            transition: all 0.2s ease;
+            background-color: #f9fafb;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         input[type="text"]:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--bg-secondary);
             background-color: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 3px rgba(22, 27, 34, 0.1);
         }
 
         textarea {
@@ -123,13 +137,13 @@
             font-size: 1em;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
             text-align: center;
         }
 
         .btn-danger {
-            background: #dc3545;
+            background: var(--danger);
             color: white;
             padding: 6px 14px;
             font-size: 0.85em;
@@ -137,11 +151,11 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .btn-danger:hover {
-            background: #c82333;
+            background: #b91c1c;
         }
 
         table {
@@ -151,14 +165,14 @@
         }
 
         thead tr {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-secondary);
+            color: var(--text-light);
         }
 
         th, td {
             padding: 12px 15px;
             text-align: left;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid var(--border-light);
         }
 
         th {
@@ -169,12 +183,12 @@
         }
 
         tbody tr:hover {
-            background-color: #f5f3ff;
+            background-color: #f9fafb;
         }
 
         .badge-code {
-            background-color: #ede9fe;
-            color: #5b21b6;
+            background-color: var(--bg-secondary);
+            color: var(--text-light);
             padding: 3px 10px;
             border-radius: 12px;
             font-family: monospace;
@@ -184,28 +198,29 @@
 
         .no-data {
             text-align: center;
-            color: #999;
+            color: var(--text-muted);
             padding: 30px;
             font-style: italic;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: var(--bg-secondary);
+            color: var(--text-light);
         }
 
         .btn-primary:hover {
+            background: var(--bg-tertiary);
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
         }
 
         .btn-secondary {
-            background: #6c757d;
-            color: white;
+            background: var(--bg-tertiary);
+            color: var(--text-light);
         }
 
         .btn-secondary:hover {
-            background: #5a6268;
+            background: var(--accent-hover);
         }
 
         @media (max-width: 600px) {
@@ -215,6 +230,8 @@
     </style>
 </head>
 <body>
+    <%@ include file="../includes/sidebar.html" %>
+    <div class="content-with-sidebar">
     <div class="page-wrapper">
 
         <%
@@ -302,6 +319,7 @@
             <% } %>
         </div>
 
+    </div>
     </div>
 </body>
 </html>
