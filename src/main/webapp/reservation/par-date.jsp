@@ -1,4 +1,3 @@
--- Active: 1743734403458@@127.0.0.1@5432@tour_operateur
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
@@ -13,7 +12,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulation par Date - Tour Opérateur</title>
+    <title>Simulation par Date - Tour Operateur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -22,567 +22,626 @@
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #1f2937;
-            --bg-tertiary: #374151;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --danger: #ef4444;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
             --text-light: #ffffff;
-            --text-muted: #6b7280;
-            --text-dark: #1f2937;
-            --border-light: #e5e7eb;
-            --success: #059669;
-            --danger: #dc2626;
-            --warning: #d97706;
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
+            line-height: 1.6;
         }
 
         .content-with-sidebar {
             display: flex;
-            width: 100%;
             min-height: 100vh;
         }
 
         .main-content {
             flex: 1;
-            margin-left: 280px;
-            padding: 40px;
-            width: calc(100% - 280px);
+            padding: 32px 40px;
         }
 
         .content-wrapper {
-            max-width: 1600px;
+            max-width: 100%;
             margin: 0 auto;
-            width: 100%;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .main-content {
                 margin-left: 0;
-                padding: 20px;
+                padding: 24px;
             }
         }
 
-        h1 {
-            color: var(--text-dark);
-            font-size: 2.2em;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+        /* Page Header */
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 1.875rem;
             font-weight: 700;
-            text-align: center;
-        }
-
-        .subtitle {
-            color: var(--text-muted);
-            font-size: 1.1em;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .search-form {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            display: flex;
-            gap: 15px;
-            align-items: end;
-            flex-wrap: wrap;
-            border: 1px solid var(--border-light);
-            justify-content: center;
-        }
-
-        .form-group {
-            min-width: 200px;
-        }
-
-        .search-form label {
-            display: block;
-            font-weight: 600;
-            color: var(--text-dark);
+            color: var(--text-primary);
             margin-bottom: 8px;
         }
 
-        .search-form input[type="date"] {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.2s ease;
+        .page-subtitle {
+            font-size: 0.975rem;
+            color: var(--text-secondary);
         }
 
-        .search-form input[type="date"]:focus {
+        /* Search Form */
+        .search-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 16px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 200px;
+            max-width: 300px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: var(--bg-card);
+        }
+
+        .form-input:focus {
             outline: none;
-            border-color: var(--bg-secondary);
-            box-shadow: 0 0 0 3px rgba(22, 27, 34, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            font-family: inherit;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
         .btn-primary {
-            background: var(--bg-secondary);
+            background: var(--primary);
             color: var(--text-light);
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            background: var(--primary-light);
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-        }
-
-        .btn-save {
-            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-            color: white;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(72, 187, 120, 0.3);
-        }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.4);
-        }
-
-        .btn-save:disabled {
-            background: #a0aec0;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-reset {
-            background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
-            color: white;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(237, 137, 54, 0.3);
-        }
-
-        .btn-reset:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(237, 137, 54, 0.4);
-        }
-
-        .btn-reset:disabled {
-            background: #a0aec0;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .results-header {
-            background: #ffffff;
-            padding: 20px 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid var(--border-light);
-        }
-
-        .results-header h2 {
-            color: var(--text-dark);
-            font-size: 1.5em;
-        }
-
-        .badge {
-            background: var(--bg-secondary);
+        .btn-success {
+            background: var(--success);
             color: var(--text-light);
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.95em;
         }
 
-        .vehicule-card {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-            border-left: 5px solid #667eea;
-            width: 100%;
+        .btn-success:hover {
+            background: #059669;
         }
 
-        .vehicule-header {
+        .btn-warning {
+            background: var(--warning);
+            color: var(--text-light);
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Results Header */
+        .results-header {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e2e8f0;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: var(--shadow-sm);
         }
 
-        .vehicule-info {
-            flex: 1;
+        .results-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        .vehicule-name {
-            font-size: 1.4em;
-            color: var(--text-dark);
-            font-weight: 700;
-            margin-bottom: 5px;
+        .stats-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
-        .vehicule-details {
-            color: var(--text-muted);
-            font-size: 0.95em;
+        .stat-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.813rem;
+            font-weight: 500;
         }
 
-        .vehicule-details span {
-            display: inline-block;
-            margin-right: 15px;
+        .stat-badge.primary {
+            background: var(--primary);
+            color: var(--text-light);
         }
 
-        .vehicule-timing {
+        .stat-badge.success {
+            background: var(--success-light);
+            color: #065f46;
+        }
+
+        .stat-badge.warning {
+            background: var(--warning-light);
+            color: #92400e;
+        }
+
+        /* Action Buttons */
+        .action-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* Alert Box */
+        .alert {
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            border-left: 4px solid;
+        }
+
+        .alert-warning {
+            background: var(--warning-light);
+            border-color: var(--warning);
+        }
+
+        .alert-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .alert-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .unassigned-list {
+            list-style: none;
+        }
+
+        .unassigned-item {
+            background: var(--bg-card);
+            padding: 14px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--border);
+        }
+
+        .unassigned-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .unassigned-info strong {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .unassigned-info span {
+            font-size: 0.813rem;
+            color: var(--text-secondary);
+        }
+
+        .passenger-badge {
+            background: var(--warning-light);
+            color: #92400e;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.813rem;
+            font-weight: 500;
+        }
+
+        /* Vehicle Card */
+        .vehicle-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .vehicle-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .vehicle-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .vehicle-ref {
+            font-weight: 400;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+
+        .vehicle-specs {
             display: flex;
             gap: 20px;
-            margin-top: 15px;
-            padding: 15px;
-            background: #f9fafb;
-            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .spec-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .spec-icon {
+            width: 16px;
+            height: 16px;
+            opacity: 0.7;
+        }
+
+        .reservation-count {
+            background: var(--bg-primary);
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Timing Section */
+        .timing-section {
+            padding: 20px 24px;
+            background: var(--bg-primary);
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
         }
 
         .timing-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            text-align: center;
         }
 
         .timing-label {
-            font-size: 0.85em;
-            color: var(--text-muted);
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
         }
 
         .timing-value {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: var(--text-dark);
-        }
-
-        .timing-depart {
-            color: var(--bg-secondary);
-        }
-
-        .timing-retour {
-            color: var(--success);
-        }
-
-        .timing-duree {
-            color: #ed8936;
-        }
-
-        .trajet-details {
-            margin-top: 20px;
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            width: 100%;
-        }
-
-        .trajet-title {
-            color: #2d3748;
-            font-size: 1.2em;
-            margin-bottom: 20px;
+            font-size: 1.25rem;
             font-weight: 600;
         }
 
-        .segments-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .timing-value.depart {
+            color: var(--primary);
         }
 
-        .segment {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        .timing-value.retour {
+            color: var(--success);
+        }
+
+        .timing-value.duree {
+            color: var(--warning);
+        }
+
+        /* Route Details */
+        .route-section {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .route-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .route-segments {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .route-segment {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: var(--radius);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 15px;
-            width: 100%;
+            gap: 12px;
         }
 
         .segment-route {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             flex: 1;
-            min-width: 300px;
+            min-width: 250px;
         }
 
-        .segment-from, .segment-to {
-            font-weight: 600;
-            color: #2d3748;
-            font-size: 1em;
+        .segment-point {
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.875rem;
         }
 
         .segment-arrow {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 1.2em;
+            color: var(--accent);
+            font-weight: 600;
         }
 
-        .segment-info {
+        .segment-metrics {
             display: flex;
-            gap: 20px;
-            align-items: center;
+            gap: 12px;
         }
 
-        .segment-distance {
-            background: #e6f3ff;
-            color: #0066cc;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9em;
+        .metric-badge {
+            padding: 4px 10px;
+            border-radius: var(--radius);
+            font-size: 0.813rem;
+            font-weight: 500;
         }
 
-        .segment-duration {
-            background: #fff3e0;
-            color: #e65100;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.9em;
+        .metric-badge.distance {
+            background: #dbeafe;
+            color: #1e40af;
         }
 
-        @media (max-width: 768px) {
-            .segment {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .segment-route {
-                width: 100%;
-            }
-
-            .segment-info {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .trajet-details {
-                padding: 15px;
-            }
+        .metric-badge.duration {
+            background: #fef3c7;
+            color: #92400e;
         }
 
-        .reservation-count {
-            background: #f9fafb;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            color: var(--text-dark);
+        /* Reservations Table */
+        .table-section {
+            padding: 0;
         }
 
-        .reservations-table {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
         }
 
-        .reservations-table thead {
-            background: var(--bg-secondary);
+        .data-table thead {
+            background: var(--primary);
         }
 
-        .reservations-table th {
-            padding: 12px 15px;
+        .data-table th {
+            padding: 14px 20px;
             text-align: left;
+            font-size: 0.75rem;
             font-weight: 600;
             color: var(--text-light);
-            font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .reservations-table td {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-light);
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
         }
 
-        .reservations-table tbody tr:last-child td {
+        .data-table tbody tr:last-child td {
             border-bottom: none;
         }
 
-        .reservations-table tbody tr:hover {
-            background: #f9fafb;
+        .data-table tbody tr:hover {
+            background: var(--bg-primary);
         }
 
-        .client-name {
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 3px;
+        .cell-primary {
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
-        .client-email {
-            color: var(--text-muted);
-            font-size: 0.85em;
+        .cell-secondary {
+            font-size: 0.813rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
         }
 
-        .hotel-name {
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 3px;
-        }
-
-        .hotel-ville {
-            color: var(--text-muted);
-            font-size: 0.85em;
-        }
-
-        .passengers {
-            display: inline-block;
-            background: var(--bg-secondary);
+        .passengers-badge {
+            display: inline-flex;
+            align-items: center;
+            background: var(--primary);
             color: var(--text-light);
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .time-info {
-            display: inline-block;
-            padding: 5px 12px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            color: var(--text-light);
-            font-weight: 600;
-        }
-
-        .no-results {
-            background: #ffffff;
-            padding: 60px 30px;
+            padding: 4px 12px;
             border-radius: 12px;
+            font-size: 0.813rem;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
             text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border: 1px solid var(--border-light);
+            padding: 60px 24px;
+            color: var(--text-secondary);
         }
 
-        .no-results svg {
-            width: 80px;
-            height: 80px;
-            color: var(--text-muted);
-            margin-bottom: 20px;
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
         }
 
-        .no-results h3 {
-            color: var(--text-dark);
-            font-size: 1.5em;
-            margin-bottom: 10px;
-        }
-
-        .no-results p {
-            color: var(--text-muted);
-            font-size: 1.1em;
-        }
-
-        .back-link {
-            display: block;
-            margin-top: 25px;
-            color: var(--text-dark);
-            text-decoration: none;
+        .empty-state h3 {
+            font-size: 1.125rem;
             font-weight: 600;
-            font-size: 1em;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+        }
+
+        /* No Results Card */
+        .no-results-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 80px 40px;
             text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .no-results-card svg {
+            width: 72px;
+            height: 72px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            opacity: 0.5;
+        }
+
+        .no-results-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .no-results-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 32px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
         }
 
         .back-link:hover {
-            text-decoration: underline;
+            color: var(--text-primary);
         }
 
-        .empty-vehicle {
-            text-align: center;
-            padding: 30px;
-            color: var(--text-muted);
-            font-style: italic;
-        }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .results-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        .alert-warning {
-            background: #fffbeb;
-            border-left: 5px solid var(--warning);
-            padding: 20px 25px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
+            .vehicle-header {
+                flex-direction: column;
+            }
 
-        .alert-warning h3 {
-            color: var(--text-dark);
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
+            .timing-section {
+                justify-content: space-between;
+            }
 
-        .alert-warning p {
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
+            .route-segment {
+                flex-direction: column;
+                align-items: flex-start;
+            }
 
-        .unassigned-list {
-            list-style: none;
-            margin-top: 15px;
-        }
-
-        .unassigned-item {
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 3px solid var(--warning);
-            border: 1px solid var(--border-light);
-            border-left: 3px solid var(--warning);
-        }
-
-        .unassigned-item-info {
-            flex: 1;
-            color: var(--text-dark);
+            .data-table th,
+            .data-table td {
+                padding: 12px 16px;
+            }
         }
     </style>
 </head>
@@ -592,18 +651,22 @@
     <div class="content-with-sidebar">
         <div class="main-content">
             <div class="content-wrapper">
-            <h1>🚗 Simulation par Date</h1>
-            <p class="subtitle">Visualisez l'assignation des véhicules aux réservations pour une date donnée</p>
-
-            <form class="search-form" method="get" action="<%= request.getContextPath() %>/reservation/par-date">
-                <div class="form-group">
-                    <label for="date">Sélectionnez une date :</label>
-                    <input type="date" id="date" name="date" 
-                           value="<%= request.getAttribute("dateRecherche") != null ? request.getAttribute("dateRecherche") : "" %>" 
-                           required>
+                <div class="page-header">
+                    <h1 class="page-title">Simulation par Date</h1>
+                    <p class="page-subtitle">Visualisez l'assignation des vehicules aux reservations pour une date donnee</p>
                 </div>
-                <button type="submit" class="btn-primary">🔍 Lancer la simulation</button>
-            </form>
+
+                <div class="search-card">
+                    <form class="search-form" method="get" action="<%= request.getContextPath() %>/reservation/par-date">
+                        <div class="form-group">
+                            <label class="form-label" for="date">Date de simulation</label>
+                            <input type="date" id="date" name="date" class="form-input"
+                                   value="<%= request.getAttribute("dateRecherche") != null ? request.getAttribute("dateRecherche") : "" %>" 
+                                   required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Lancer la simulation</button>
+                    </form>
+                </div>
 
             <% 
             String dateRecherche = (String) request.getAttribute("dateRecherche");
@@ -618,31 +681,29 @@
             if (dateRecherche != null && !dateRecherche.isEmpty()) {
             %>
                 <div class="results-header">
-                    <h2>Simulation du <%= dateRecherche %></h2>
-                    <div class="header-actions">
-                        <span class="badge"><%= nombreVehicules != null ? nombreVehicules : 0 %> véhicule(s) utilisé(s)</span>
-                        <span class="badge" style="margin-left: 10px; background: #48bb78;"><%= nombreReservationsAssignees != null ? nombreReservationsAssignees : 0 %> / <%= nombreReservationsTotal != null ? nombreReservationsTotal : 0 %> assignée(s)</span>
+                    <h2 class="results-title">Simulation du <%= dateRecherche %></h2>
+                    <div class="stats-group">
+                        <span class="stat-badge primary"><%= nombreVehicules != null ? nombreVehicules : 0 %> vehicule(s)</span>
+                        <span class="stat-badge success"><%= nombreReservationsAssignees != null ? nombreReservationsAssignees : 0 %> / <%= nombreReservationsTotal != null ? nombreReservationsTotal : 0 %> assignee(s)</span>
                         <% if (nombreReservationsNonAssignees != null && nombreReservationsNonAssignees > 0) { %>
-                            <span class="badge" style="margin-left: 10px; background: #ffc107; color: #333;"><%= nombreReservationsNonAssignees %> non assignée(s)</span>
+                            <span class="stat-badge warning"><%= nombreReservationsNonAssignees %> non assignee(s)</span>
                         <% } %>
                     </div>
                 </div>
 
-                <!-- Boutons d'action -->
-                <div class="action-buttons">
-                    <button type="button" class="btn-save" onclick="enregistrerSimulation('<%= dateRecherche %>')">
-                        💾 Enregistrer la simulation
+                <div class="action-bar">
+                    <button type="button" class="btn btn-success" onclick="enregistrerSimulation('<%= dateRecherche %>')">
+                        Enregistrer la simulation
                     </button>
-                    <button type="button" class="btn-reset" onclick="reinitialiserSimulation('<%= dateRecherche %>')">
-                        🔄 Réinitialiser les assignations
+                    <button type="button" class="btn btn-warning" onclick="reinitialiserSimulation('<%= dateRecherche %>')">
+                        Reinitialiser les assignations
                     </button>
                 </div>
 
-                <!-- Alerte pour les réservations non assignées -->
                 <% if (reservationsNonAssignees != null && !reservationsNonAssignees.isEmpty()) { %>
-                    <div class="alert-warning">
-                        <h3>⚠️ Réservations non assignées</h3>
-                        <p><strong><%= reservationsNonAssignees.size() %> réservation(s)</strong> n'ont pas pu être assignées à un véhicule (capacité insuffisante).</p>
+                    <div class="alert alert-warning">
+                        <h3 class="alert-title">Reservations non assignees</h3>
+                        <p class="alert-text"><strong><%= reservationsNonAssignees.size() %> reservation(s)</strong> n'ont pas pu etre assignees a un vehicule (capacite insuffisante).</p>
                         <ul class="unassigned-list">
                             <% 
                             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -651,15 +712,11 @@
                                 Hotel hotel = r.getHotel();
                             %>
                                 <li class="unassigned-item">
-                                    <div class="unassigned-item-info">
+                                    <div class="unassigned-info">
                                         <strong><%= client != null ? client.getPrenom() + " " + client.getNom() : "Client inconnu" %></strong>
-                                        <br>
-                                        <span style="font-size: 0.9em; color: #666;">
-                                            <%= hotel != null ? hotel.getNom() + " (" + hotel.getVille() + ")" : "Hôtel inconnu" %>
-                                            - Arrivée: <%= r.getDateHeureArrive() != null ? timeFormat.format(r.getDateHeureArrive()) : "?" %>
-                                        </span>
+                                        <span><%= hotel != null ? hotel.getNom() + " (" + hotel.getVille() + ")" : "Hotel inconnu" %> - Arrivee: <%= r.getDateHeureArrive() != null ? timeFormat.format(r.getDateHeureArrive()) : "?" %></span>
                                     </div>
-                                    <span class="passengers" style="background: #ffc107; color: #333;"><%= r.getNombrePassage() %> pers.</span>
+                                    <span class="passenger-badge"><%= r.getNombrePassage() %> pers.</span>
                                 </li>
                             <% } %>
                         </ul>
@@ -672,44 +729,52 @@
                         Vehicule vehicule = entry.getKey();
                         List<Reservation> reservations = entry.getValue();
                 %>
-                    <div class="vehicule-card">
-                        <div class="vehicule-header">
-                            <div class="vehicule-info">
-                                <div class="vehicule-name">
-                                    <%= vehicule.getMarque() %> <%= vehicule.getModele() %> 
-                                    <span style="color: #718096; font-weight: 400; font-size: 0.8em;">(Référence: <%= vehicule.getReference() %>)</span>
-                                </div>
-                                <div class="vehicule-details">
-                                    <span>🪑 <%= vehicule.getNombrePlaces() %> places</span>
+                    <div class="vehicle-card">
+                        <div class="vehicle-header">
+                            <div>
+                                <h3 class="vehicle-title">
+                                    <%= vehicule.getMarque() %> <%= vehicule.getModele() %>
+                                    <span class="vehicle-ref">(Ref: <%= vehicule.getReference() %>)</span>
+                                </h3>
+                                <div class="vehicle-specs">
+                                    <span class="spec-item">
+                                        <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path></svg>
+                                        <%= vehicule.getNombrePlaces() %> places
+                                    </span>
                                     <% if (vehicule.getTypeCarburant() != null) { %>
-                                        <span>⛽ <%= vehicule.getTypeCarburant().getNom() %></span>
+                                        <span class="spec-item">
+                                            <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                            <%= vehicule.getTypeCarburant().getNom() %>
+                                        </span>
                                     <% } %>
-                                    <span>🚗 <%= vehicule.getVitesseMoyenne() %> km/h</span>
+                                    <span class="spec-item">
+                                        <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                        <%= vehicule.getVitesseMoyenne() %> km/h
+                                    </span>
                                 </div>
                             </div>
                             <div class="reservation-count">
-                                <%= reservations.size() %> réservation(s) assignée(s)
+                                <%= reservations.size() %> reservation(s)
                             </div>
                         </div>
 
-                        <!-- Affichage des horaires de trajet du véhicule -->
                         <% 
                         SimulationService.InfosTrajet infosTrajet = (infosTrajetParVehicule != null) ? infosTrajetParVehicule.get(vehicule) : null;
                         if (infosTrajet != null && !reservations.isEmpty()) { 
                             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
                         %>
-                            <div class="vehicule-timing">
+                            <div class="timing-section">
                                 <div class="timing-item">
-                                    <div class="timing-label">Départ Aéroport</div>
-                                    <div class="timing-value timing-depart">🛫 <%= timeFormat.format(infosTrajet.getHeureDepart()) %></div>
+                                    <div class="timing-label">Depart Aeroport</div>
+                                    <div class="timing-value depart"><%= timeFormat.format(infosTrajet.getHeureDepart()) %></div>
                                 </div>
                                 <div class="timing-item">
-                                    <div class="timing-label">Retour Aéroport</div>
-                                    <div class="timing-value timing-retour">🛬 <%= timeFormat.format(infosTrajet.getHeureRetour()) %></div>
+                                    <div class="timing-label">Retour Aeroport</div>
+                                    <div class="timing-value retour"><%= timeFormat.format(infosTrajet.getHeureRetour()) %></div>
                                 </div>
                                 <div class="timing-item">
-                                    <div class="timing-label">Durée Totale</div>
-                                    <div class="timing-value timing-duree">⏱️ <% 
+                                    <div class="timing-label">Duree Totale</div>
+                                    <div class="timing-value duree"><% 
                                         int dureeMin = infosTrajet.getDureeTrajetMinutes();
                                         if (dureeMin < 60) {
                                             out.print(dureeMin + " min");
@@ -726,23 +791,22 @@
                                 </div>
                             </div>
 
-                            <!-- Détails du trajet segment par segment -->
                             <% if (infosTrajet.getSegments() != null && !infosTrajet.getSegments().isEmpty()) { %>
-                                <div class="trajet-details">
-                                    <h4 class="trajet-title">📍 Détails du trajet</h4>
-                                    <div class="segments-container">
+                                <div class="route-section">
+                                    <h4 class="route-title">Details du trajet</h4>
+                                    <div class="route-segments">
                                         <% for (int i = 0; i < infosTrajet.getSegments().size(); i++) {
                                             SimulationService.SegmentTrajet segment = infosTrajet.getSegments().get(i);
                                         %>
-                                            <div class="segment">
+                                            <div class="route-segment">
                                                 <div class="segment-route">
-                                                    <span class="segment-from"><%= segment.getOrigine() %></span>
+                                                    <span class="segment-point"><%= segment.getOrigine() %></span>
                                                     <span class="segment-arrow">→</span>
-                                                    <span class="segment-to"><%= segment.getDestination() %></span>
+                                                    <span class="segment-point"><%= segment.getDestination() %></span>
                                                 </div>
-                                                <div class="segment-info">
-                                                    <span class="segment-distance">📏 <%= String.format("%.1f", segment.getDistanceKm()) %> km</span>
-                                                    <span class="segment-duration">⏱️ <%= segment.getDureeMinutes() %> min</span>
+                                                <div class="segment-metrics">
+                                                    <span class="metric-badge distance"><%= String.format("%.1f", segment.getDistanceKm()) %> km</span>
+                                                    <span class="metric-badge duration"><%= segment.getDureeMinutes() %> min</span>
                                                 </div>
                                             </div>
                                         <% } %>
@@ -752,42 +816,44 @@
                         <% } %>
 
                         <% if (!reservations.isEmpty()) { %>
-                            <table class="reservations-table">
-                                <thead>
-                                    <tr>
-                                        <th>Client</th>
-                                        <th>Hôtel</th>
-                                        <th>Ville</th>
-                                        <th>Passagers</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% 
-                                    for (Reservation r : reservations) { 
-                                        Client client = r.getClient();
-                                        Hotel hotel = r.getHotel();
-                                    %>
-                                    <tr>
-                                        <td>
-                                            <div class="client-name"><%= client != null ? client.getPrenom() + " " + client.getNom() : "-" %></div>
-                                            <div class="client-email"><%= client != null ? client.getEmail() : "" %></div>
-                                        </td>
-                                        <td>
-                                            <div class="hotel-name"><%= hotel != null ? hotel.getNom() : "-" %></div>
-                                        </td>
-                                        <td>
-                                            <div class="hotel-ville"><%= hotel != null ? hotel.getVille() : "-" %></div>
-                                        </td>
-                                        <td>
-                                            <span class="passengers"><%= r.getNombrePassage() %> pers.</span>
-                                        </td>
-                                    </tr>
-                                    <% } %>
-                                </tbody>
-                            </table>
+                            <div class="table-section">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Client</th>
+                                            <th>Hotel</th>
+                                            <th>Ville</th>
+                                            <th>Passagers</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% 
+                                        for (Reservation r : reservations) { 
+                                            Client client = r.getClient();
+                                            Hotel hotel = r.getHotel();
+                                        %>
+                                        <tr>
+                                            <td>
+                                                <div class="cell-primary"><%= client != null ? client.getPrenom() + " " + client.getNom() : "-" %></div>
+                                                <div class="cell-secondary"><%= client != null ? client.getEmail() : "" %></div>
+                                            </td>
+                                            <td>
+                                                <div class="cell-primary"><%= hotel != null ? hotel.getNom() : "-" %></div>
+                                            </td>
+                                            <td>
+                                                <div class="cell-secondary"><%= hotel != null ? hotel.getVille() : "-" %></div>
+                                            </td>
+                                            <td>
+                                                <span class="passengers-badge"><%= r.getNombrePassage() %> pers.</span>
+                                            </td>
+                                        </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
                         <% } else { %>
-                            <div class="empty-vehicle">
-                                Aucune réservation assignée à ce véhicule
+                            <div class="empty-state">
+                                Aucune reservation assignee a ce vehicule
                             </div>
                         <% } %>
                     </div>
@@ -795,38 +861,41 @@
                     } 
                 } else { 
                 %>
-                    <div class="no-results">
+                    <div class="no-results-card">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <h3>Aucun véhicule assigné</h3>
-                        <p>Aucun véhicule n'a été assigné pour le <%= dateRecherche %></p>
+                        <h3>Aucun vehicule assigne</h3>
+                        <p>Aucun vehicule n'a ete assigne pour le <%= dateRecherche %></p>
                     </div>
                 <% } %>
             <% } else { %>
-                <div class="no-results">
+                <div class="no-results-card">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <h3>Sélectionnez une date</h3>
-                    <p>Choisissez une date ci-dessus pour lancer la simulation d'assignation des véhicules</p>
+                    <h3>Selectionnez une date</h3>
+                    <p>Choisissez une date ci-dessus pour lancer la simulation d'assignation des vehicules</p>
                 </div>
             <% } %>
 
-            <a href="<%= request.getContextPath() %>/reservation/form" class="back-link">← Retour au formulaire de réservation</a>
+                <a href="<%= request.getContextPath() %>/reservation/form" class="back-link">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Retour au formulaire de reservation
+                </a>
             </div>
         </div>
     </div>
 
 <script>
     function enregistrerSimulation(date) {
-        if (!confirm('Voulez-vous vraiment enregistrer cette simulation ?\nCela assignera les véhicules aux réservations.')) {
+        if (!confirm('Voulez-vous vraiment enregistrer cette simulation ?\nCela assignera les vehicules aux reservations.')) {
             return;
         }
         
         var btn = event.target;
         btn.disabled = true;
-        btn.innerHTML = '⏳ Enregistrement...';
+        btn.innerHTML = 'Enregistrement...';
         
         fetch('<%= request.getContextPath() %>/simulation/enregistrer?date=' + date, {
             method: 'POST',
@@ -840,31 +909,31 @@
         .then(function(data) {
             if (data.success || data.data) {
                 var result = data.data || data;
-                alert('✅ ' + result.message + '\n\n' + 
-                      'Assignations enregistrées: ' + result.nbAssignations + '\n' +
-                      'Non assignées: ' + result.nbNonAssignees);
+                alert('Succes: ' + result.message + '\n\n' + 
+                      'Assignations enregistrees: ' + result.nbAssignations + '\n' +
+                      'Non assignees: ' + result.nbNonAssignees);
                 location.reload();
             } else {
-                alert('❌ Erreur: ' + (data.message || 'Erreur inconnue'));
+                alert('Erreur: ' + (data.message || 'Erreur inconnue'));
                 btn.disabled = false;
-                btn.innerHTML = '💾 Enregistrer la simulation';
+                btn.innerHTML = 'Enregistrer la simulation';
             }
         })
         .catch(function(error) {
-            alert('❌ Erreur de connexion: ' + error.message);
+            alert('Erreur de connexion: ' + error.message);
             btn.disabled = false;
-            btn.innerHTML = '💾 Enregistrer la simulation';
+            btn.innerHTML = 'Enregistrer la simulation';
         });
     }
     
     function reinitialiserSimulation(date) {
-        if (!confirm('Voulez-vous vraiment réinitialiser les assignations pour cette date ?\nTous les véhicules seront désassignés.')) {
+        if (!confirm('Voulez-vous vraiment reinitialiser les assignations pour cette date ?\nTous les vehicules seront desassignes.')) {
             return;
         }
         
         var btn = event.target;
         btn.disabled = true;
-        btn.innerHTML = '⏳ Réinitialisation...';
+        btn.innerHTML = 'Reinitialisation...';
         
         fetch('<%= request.getContextPath() %>/simulation/reinitialiser?date=' + date, {
             method: 'POST',
@@ -878,18 +947,18 @@
         .then(function(data) {
             if (data.success || data.data) {
                 var result = data.data || data;
-                alert('✅ ' + result.message + '\n\nRéservations modifiées: ' + result.nbModifiees);
+                alert('Succes: ' + result.message + '\n\nReservations modifiees: ' + result.nbModifiees);
                 location.reload();
             } else {
-                alert('❌ Erreur: ' + (data.message || 'Erreur inconnue'));
+                alert('Erreur: ' + (data.message || 'Erreur inconnue'));
                 btn.disabled = false;
-                btn.innerHTML = '🔄 Réinitialiser les assignations';
+                btn.innerHTML = 'Reinitialiser les assignations';
             }
         })
         .catch(function(error) {
-            alert('❌ Erreur de connexion: ' + error.message);
+            alert('Erreur de connexion: ' + error.message);
             btn.disabled = false;
-            btn.innerHTML = '🔄 Réinitialiser les assignations';
+            btn.innerHTML = 'Reinitialiser les assignations';
         });
     }
 </script>

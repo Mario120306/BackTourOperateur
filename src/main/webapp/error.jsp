@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Erreur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,87 +16,117 @@
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #1f2937;
-            --bg-tertiary: #374151;
-            --text-light: #ffffff;
-            --text-muted: #6b7280;
-            --text-dark: #1f2937;
-            --border-light: #e5e7eb;
-            --danger: #dc2626;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --radius: 8px;
+            --radius-lg: 12px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
+            line-height: 1.6;
         }
 
-        .container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 600px;
+        .error-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 100px);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 48px;
+            max-width: 500px;
             width: 100%;
             text-align: center;
-            border: 1px solid var(--border-light);
+        }
+
+        .error-code {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--danger);
+            line-height: 1;
+            margin-bottom: 16px;
         }
 
         h1 {
-            color: var(--danger);
-            margin-bottom: 20px;
-            font-size: 2em;
-            font-weight: 700;
-        }
-
-        .error-icon {
-            font-size: 4em;
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
         }
 
         .error-message {
-            background-color: #fef2f2;
+            background: var(--danger-bg);
             color: var(--danger);
             border: 1px solid #fecaca;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 32px;
+            font-size: 0.938rem;
         }
 
         .btn {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             padding: 12px 24px;
-            background: var(--bg-secondary);
-            color: var(--text-light);
-            text-decoration: none;
-            border-radius: 8px;
+            font-size: 0.938rem;
             font-weight: 600;
-            transition: all 0.2s ease;
+            font-family: inherit;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            background: var(--accent);
+            color: white;
         }
 
         .btn:hover {
-            background: var(--bg-tertiary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
+            background: var(--accent-hover);
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 32px 24px;
+                margin: 16px;
+            }
+
+            .error-code {
+                font-size: 3rem;
+            }
         }
     </style>
 </head>
 <body>
-    <%@ include file="../includes/sidebar.html" %>
+    <%@ include file="includes/sidebar.jsp" %>
     <div class="content-with-sidebar">
-    <div class="container">
-        <div class="error-icon">⚠️</div>
-        <h1>Une erreur s'est produite</h1>
-        <div class="error-message">
-            <%= request.getAttribute("error") != null ? request.getAttribute("error") : "Une erreur inattendue s'est produite." %>
+        <div class="error-container">
+            <div class="card">
+                <div class="error-code">Erreur</div>
+                <h1>Une erreur s'est produite</h1>
+                <div class="error-message">
+                    <%= request.getAttribute("error") != null ? request.getAttribute("error") : "Une erreur inattendue s'est produite." %>
+                </div>
+                <a href="<%= request.getContextPath() %>/reservation/form" class="btn">Retour au formulaire</a>
+            </div>
         </div>
-        <a href="<%= request.getContextPath() %>/reservation/form" class="btn">Retour au formulaire</a>
-    </div>
     </div>
 </body>
 </html>
