@@ -3,11 +3,12 @@
 <%@ page import="itu.back.model.Client" %>
 <%@ page import="itu.back.model.Hotel" %>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nouvelle Réservation</title>
+    <title>Nouvelle Reservation - Tour Operateur</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,178 +17,182 @@
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #1f2937;
-            --bg-tertiary: #374151;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
             --text-light: #ffffff;
-            --text-muted: #6b7280;
-            --text-dark: #1f2937;
-            --border-light: #e5e7eb;
-            --success: #059669;
-            --danger: #dc2626;
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
+            line-height: 1.6;
         }
 
-        .container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 800px;
+        .main-content {
+            padding: 32px 40px;
+        }
+
+        .content-wrapper {
+            max-width: 700px;
             margin: 0 auto;
-            border: 1px solid #e5e7eb;
         }
 
-        h1 {
-            color: var(--text-dark);
-            margin-bottom: 10px;
-            font-size: 2em;
+        @media (max-width: 1024px) {
+            .main-content {
+                padding: 24px;
+            }
+        }
+
+        .page-header {
+            margin-bottom: 32px;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: 1.875rem;
             font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
         }
 
-        .subtitle {
-            color: var(--text-muted);
-            margin-bottom: 30px;
-            font-size: 0.95em;
+        .page-subtitle {
+            font-size: 0.975rem;
+            color: var(--text-secondary);
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow);
         }
 
         .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            font-size: 0.875rem;
             font-weight: 500;
         }
 
         .alert-success {
-            background-color: #ecfdf5;
+            background: var(--success-light);
             color: var(--success);
             border: 1px solid #a7f3d0;
         }
 
         .alert-error {
-            background-color: #fef2f2;
+            background: var(--danger-light);
             color: var(--danger);
             border: 1px solid #fecaca;
         }
 
-        .info-box {
-            background-color: #f9fafb;
-            border: 1px solid var(--border-light);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 25px;
-        }
-
-        .info-box h3 {
-            color: var(--text-dark);
-            font-size: 1em;
-            margin-bottom: 8px;
-        }
-
-        .info-box p {
-            color: var(--text-muted);
-            font-size: 0.9em;
-            line-height: 1.5;
-        }
-
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 24px;
         }
 
         label {
             display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 8px;
-            color: var(--text-dark);
-            font-weight: 600;
-            font-size: 0.95em;
-        }
-
-        select, input {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.2s ease;
-            background-color: #f9fafb;
-        }
-
-        select:focus, input:focus {
-            outline: none;
-            border-color: var(--bg-secondary);
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(22, 27, 34, 0.1);
-        }
-
-        select {
-            cursor: pointer;
-        }
-
-        .btn-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        button, .btn {
-            flex: 1;
-            padding: 14px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            text-align: center;
-            display: inline-block;
-        }
-
-        .btn-primary {
-            background: var(--bg-secondary);
-            color: var(--text-light);
-        }
-
-        .btn-primary:hover {
-            background: var(--bg-tertiary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
-        }
-
-        .btn-primary:active {
-            transform: translateY(0);
         }
 
         .required {
             color: var(--danger);
         }
 
+        select, input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.938rem;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
         .help-text {
-            font-size: 0.85em;
-            color: var(--text-muted);
-            margin-top: 5px;
+            font-size: 0.813rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        .btn-container {
+            margin-top: 32px;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 32px;
+            font-size: 0.938rem;
+            font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         @media (max-width: 768px) {
-            .content-with-sidebar {
-                padding: 15px;
+            .card {
+                padding: 24px;
             }
 
-            .container {
-                padding: 25px;
-            }
-
-            h1 {
-                font-size: 1.5em;
-            }
-
-            .btn-container {
-                flex-direction: column;
+            .page-title {
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -196,84 +201,89 @@
     <%@ include file="../includes/sidebar.jsp" %>
 
     <div class="content-with-sidebar">
-        <div class="container">
-            <h1>📅 Nouvelle Réservation</h1>
-            <p class="subtitle">Créer une nouvelle réservation de transport</p>
+        <div class="main-content">
+            <div class="content-wrapper">
+                <div class="page-header">
+                    <h1 class="page-title">Nouvelle Reservation</h1>
+                    <p class="page-subtitle">Creer une nouvelle reservation de transport</p>
+                </div>
 
-        <% 
-            String success = (String) request.getAttribute("success");
-            String error = (String) request.getAttribute("error");
-            
-            if (success != null) { 
-        %>
-            <div class="alert alert-success"><%= success %></div>
-        <% } %>
-        
-        <% if (error != null) { %>
-            <div class="alert alert-error">✗ <%= error %></div>
-        <% } %>
-
-        <form action="<%= request.getContextPath() %>/reservation/save" method="POST">
-            <div class="form-group">
-                <label for="idClient">Client <span class="required">*</span></label>
-                <select name="idClient" id="idClient" required>
-                    <option value="">-- Sélectionner un client --</option>
+                <div class="card">
                     <% 
-                        List<Client> clients = (List<Client>) request.getAttribute("clients");
-                        if (clients != null) {
-                            for (Client client : clients) {
+                        String success = (String) request.getAttribute("success");
+                        String error = (String) request.getAttribute("error");
+                        
+                        if (success != null) { 
                     %>
-                        <option value="<%= client.getId() %>">
-                            <%= client.getNom() %> <%= client.getPrenom() %> (<%= client.getEmail() %>)
-                        </option>
-                    <% 
-                            }
-                        }
-                    %>
-                </select>
-            </div>
+                        <div class="alert alert-success"><%= success %></div>
+                    <% } %>
+                    
+                    <% if (error != null) { %>
+                        <div class="alert alert-error"><%= error %></div>
+                    <% } %>
 
-            <div class="form-group">
-                <label for="idHotel">Hôtel de destination <span class="required">*</span></label>
-                <select name="idHotel" id="idHotel" required>
-                    <option value="">-- Sélectionner un hôtel --</option>
-                    <% 
-                        List<Hotel> hotels = (List<Hotel>) request.getAttribute("hotels");
-                        if (hotels != null) {
-                            for (Hotel hotel : hotels) {
-                    %>
-                        <option value="<%= hotel.getId() %>">
-                            <%= hotel.getNom() %> - <%= hotel.getVille() %>
-                        </option>
-                    <% 
-                            }
-                        }
-                    %>
-                </select>
-            </div>
+                    <form action="<%= request.getContextPath() %>/reservation/save" method="POST">
+                        <div class="form-group">
+                            <label for="idClient">Client <span class="required">*</span></label>
+                            <select name="idClient" id="idClient" required>
+                                <option value="">-- Selectionner un client --</option>
+                                <% 
+                                    List<Client> clients = (List<Client>) request.getAttribute("clients");
+                                    if (clients != null) {
+                                        for (Client client : clients) {
+                                %>
+                                    <option value="<%= client.getId() %>">
+                                        <%= client.getNom() %> <%= client.getPrenom() %> (<%= client.getEmail() %>)
+                                    </option>
+                                <% 
+                                        }
+                                    }
+                                %>
+                            </select>
+                        </div>
 
-            <div class="form-group">
-                <label for="nombrePassage">Nombre de passagers <span class="required">*</span></label>
-                <input type="number" name="nombrePassage" id="nombrePassage" 
-                       min="1" max="50" value="1" required>
-                <p class="help-text">Nombre de personnes à transporter</p>
-            </div>
+                        <div class="form-group">
+                            <label for="idHotel">Hotel de destination <span class="required">*</span></label>
+                            <select name="idHotel" id="idHotel" required>
+                                <option value="">-- Selectionner un hotel --</option>
+                                <% 
+                                    List<Hotel> hotels = (List<Hotel>) request.getAttribute("hotels");
+                                    if (hotels != null) {
+                                        for (Hotel hotel : hotels) {
+                                %>
+                                    <option value="<%= hotel.getId() %>">
+                                        <%= hotel.getNom() %> - <%= hotel.getVille() %>
+                                    </option>
+                                <% 
+                                        }
+                                    }
+                                %>
+                            </select>
+                        </div>
 
-            <div class="form-group">
-                <label for="dateHeureArrive">Date et heure d'arrivée <span class="required">*</span></label>
-                <input type="datetime-local" name="dateHeureArrive" id="dateHeureArrive" required>
-                <p class="help-text">Date et heure prévue d'arrivée à destination</p>
-            </div>
+                        <div class="form-group">
+                            <label for="nombrePassage">Nombre de passagers <span class="required">*</span></label>
+                            <input type="number" name="nombrePassage" id="nombrePassage" 
+                                   min="1" max="50" value="1" required>
+                            <p class="help-text">Nombre de personnes a transporter</p>
+                        </div>
 
-            <div class="btn-container">
-                <button type="submit" class="btn-primary">💾 Enregistrer la réservation</button>
+                        <div class="form-group">
+                            <label for="dateHeureArrive">Date et heure d'arrivee <span class="required">*</span></label>
+                            <input type="datetime-local" name="dateHeureArrive" id="dateHeureArrive" required>
+                            <p class="help-text">Date et heure prevue d'arrivee a destination</p>
+                        </div>
+
+                        <div class="btn-container">
+                            <button type="submit" class="btn btn-primary">Enregistrer la reservation</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </form>
         </div>
     </div>
 
     <script>
-        // Définir la date minimale à aujourd'hui
         document.getElementById('dateHeureArrive').min = new Date().toISOString().slice(0, 16);
     </script>
 </body>

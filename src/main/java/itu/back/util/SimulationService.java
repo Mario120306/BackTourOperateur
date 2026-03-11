@@ -364,6 +364,13 @@ public class SimulationService {
                 int dureeMinutes = calculerDureeMinutes(distance, vitesseMoyenne);
                 vehiculeAvecCap.segments
                         .add(new SegmentTrajet("Aéroport Ivato", nomPremierHotel, distance, dureeMinutes));
+            } else if (vitesseMoyenne > 0) {
+                // Fallback : utiliser une estimation basée sur la distance moyenne
+                BigDecimal distanceEstimee = new BigDecimal("15.0"); // 15 km par défaut depuis l'aéroport
+                distanceTotale = distanceTotale.add(distanceEstimee);
+                int dureeMinutes = calculerDureeMinutes(distanceEstimee, vitesseMoyenne);
+                vehiculeAvecCap.segments
+                        .add(new SegmentTrajet("Aéroport Ivato", nomPremierHotel, distanceEstimee, dureeMinutes));
             }
         }
 
@@ -397,33 +404,39 @@ public class SimulationService {
             String nomDernierHotel = hotelsMap.get(dernierHotel);
             BigDecimal distanceRetour = getDistance(conn, dernierHotel, null, aeroportId);
 
+            // Si distance Hôtel → Aéroport non trouvée, utiliser la distance inverse (Aéroport → Hôtel)
+            if (distanceRetour == null) {
+                distanceRetour = getDistance(conn, null, aeroportId, dernierHotel);
+            }
+
             if (distanceRetour != null && vitesseMoyenne > 0) {
                 distanceTotale = distanceTotale.add(distanceRetour);
                 int dureeMinutes = calculerDureeMinutes(distanceRetour, vitesseMoyenne);
                 vehiculeAvecCap.segments
                         .add(new SegmentTrajet(nomDernierHotel, "Aéroport Ivato", distanceRetour, dureeMinutes));
+            } else if (vitesseMoyenne > 0) {
+                // Fallback : utiliser une estimation basée sur la distance moyenne
+                BigDecimal distanceEstimee = new BigDecimal("15.0"); // 15 km par défaut vers l'aéroport
+                distanceTotale = distanceTotale.add(distanceEstimee);
+                int dureeMinutes = calculerDureeMinutes(distanceEstimee, vitesseMoyenne);
+                vehiculeAvecCap.segments
+                        .add(new SegmentTrajet(nomDernierHotel, "Aéroport Ivato", distanceEstimee, dureeMinutes));
             }
         }
 
         // Calculer le temps de trajet total en sommant les segments
         if (vitesseMoyenne > 0 && !vehiculeAvecCap.segments.isEmpty()) {
-            // Calculer le temps pour arriver au premier hôtel (premier segment)
-            int tempsAllerPremierHotel = vehiculeAvecCap.segments.get(0).getDureeMinutes();
-
             // Calculer le temps total de trajet (somme de tous les segments)
             int tempsTrajetTotal = 0;
             for (SegmentTrajet segment : vehiculeAvecCap.segments) {
                 tempsTrajetTotal += segment.getDureeMinutes();
             }
 
-            // Calculer l'heure de départ : partir assez tôt pour arriver au premier hôtel à
-            // l'heure
-            vehiculeAvecCap.heureDepart = new Timestamp(heureArrivee.getTime() - (tempsAllerPremierHotel * 60 * 1000));
+            // L'heure de départ = heure d'arrivée du vol (le véhicule récupère les passagers à l'aéroport)
+            vehiculeAvecCap.heureDepart = heureArrivee;
 
-            // Calculer l'heure de retour à l'aéroport
-            // = heure arrivée + temps pour les autres segments
-            int tempsApresArrivee = tempsTrajetTotal - tempsAllerPremierHotel;
-            vehiculeAvecCap.heureRetour = new Timestamp(heureArrivee.getTime() + (tempsApresArrivee * 60 * 1000));
+            // L'heure de retour = heure de départ + temps total du trajet
+            vehiculeAvecCap.heureRetour = new Timestamp(heureArrivee.getTime() + (tempsTrajetTotal * 60 * 1000));
 
             vehiculeAvecCap.dureeTrajetMinutes = tempsTrajetTotal;
         }

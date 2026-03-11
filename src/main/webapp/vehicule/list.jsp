@@ -6,7 +6,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des Véhicules</title>
+    <title>Liste des Vehicules</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,246 +16,277 @@
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #1f2937;
-            --bg-tertiary: #374151;
-            --bg-light: #f9fafb;
-            --accent-primary: #1f2937;
-            --accent-hover: #374151;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --danger: #ef4444;
+            --danger-light: #fee2e2;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
             --text-light: #ffffff;
-            --text-muted: #6b7280;
-            --text-dark: #1f2937;
-            --border-light: #e5e7eb;
-            --success: #059669;
-            --danger: #dc2626;
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 30px;
+            line-height: 1.6;
         }
 
-        .container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            max-width: 1200px;
+        .content-with-sidebar {
+            margin-left: 280px;
+            min-height: 100vh;
+            padding: 32px 40px;
+        }
+
+        @media (max-width: 1024px) {
+            .content-with-sidebar {
+                margin-left: 0;
+                padding: 24px;
+            }
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
             margin: 0 auto;
-            border: 1px solid #e5e7eb;
         }
 
-        h1 {
-            color: var(--text-dark);
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2em;
+        .page-header {
+            margin-bottom: 32px;
+        }
+
+        .page-title {
+            font-size: 1.875rem;
             font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 0.975rem;
+            color: var(--text-secondary);
         }
 
         .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 14px 20px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            font-size: 0.875rem;
             font-weight: 500;
         }
 
         .alert-success {
-            background-color: #ecfdf5;
-            color: var(--success);
+            background: var(--success-light);
+            color: #065f46;
             border: 1px solid #a7f3d0;
         }
 
         .alert-error {
-            background-color: #fef2f2;
-            color: var(--danger);
+            background: var(--danger-light);
+            color: #991b1b;
             border: 1px solid #fecaca;
         }
 
-        .header-actions {
+        .stats-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 24px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 16px;
         }
 
-        .stats {
+        .stats-group {
             display: flex;
-            gap: 20px;
+            gap: 16px;
         }
 
-        .stat-item {
-            background: var(--bg-secondary);
+        .stat-card {
+            background: var(--primary);
             color: var(--text-light);
-            padding: 15px 25px;
-            border-radius: 10px;
+            padding: 16px 24px;
+            border-radius: var(--radius);
             text-align: center;
+            min-width: 100px;
         }
 
-        .stat-item .number {
-            font-size: 1.8em;
+        .stat-number {
+            font-size: 1.5rem;
             font-weight: 700;
+            line-height: 1.2;
         }
 
-        .stat-item .label {
-            font-size: 0.85em;
-            color: #d1d5db;
-        }
-
-        .btn-add {
-            display: inline-block;
-            background: var(--bg-secondary);
-            color: var(--text-light);
-            padding: 14px 28px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-        }
-
-        .btn-add:hover {
-            background: var(--bg-tertiary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        th {
-            background-color: var(--bg-secondary);
-            color: var(--text-light);
-            font-weight: 600;
-            font-size: 0.9em;
+        .stat-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        th:first-child {
-            border-radius: 8px 0 0 0;
-        }
-
-        th:last-child {
-            border-radius: 0 8px 0 0;
-        }
-
-        tr:hover {
-            background-color: #f9fafb;
-        }
-
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-edit, .btn-delete {
-            padding: 8px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 0.9em;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            font-size: 0.875rem;
             font-weight: 500;
-            transition: all 0.2s ease;
+            font-family: inherit;
+            border-radius: var(--radius);
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--text-light);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.813rem;
         }
 
         .btn-edit {
-            background-color: var(--bg-tertiary);
+            background: var(--primary-light);
             color: var(--text-light);
         }
 
         .btn-edit:hover {
-            background-color: var(--accent-hover);
-            transform: translateY(-1px);
+            background: #334155;
         }
 
-        .btn-delete {
-            background-color: var(--danger);
-            color: white;
+        .btn-danger {
+            background: var(--danger);
+            color: var(--text-light);
         }
 
-        .btn-delete:hover {
-            background-color: #b91c1c;
-            transform: translateY(-1px);
+        .btn-danger:hover {
+            background: #dc2626;
         }
 
-        .empty-message {
-            text-align: center;
-            padding: 60px 40px;
-            color: var(--text-muted);
+        .data-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
 
-        .empty-message .icon {
-            font-size: 4em;
-            margin-bottom: 20px;
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
-        .empty-message h3 {
-            color: var(--text-dark);
-            margin-bottom: 10px;
+        .data-table thead {
+            background: var(--primary);
+        }
+
+        .data-table th {
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:hover {
+            background: var(--bg-primary);
         }
 
         .badge {
             display: inline-block;
             padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 0.85em;
+            border-radius: 12px;
+            font-size: 0.75rem;
             font-weight: 500;
         }
 
-        .badge-info {
-            background-color: var(--bg-secondary);
+        .badge-primary {
+            background: var(--primary);
             color: var(--text-light);
         }
 
-        .badge-success {
-            background-color: var(--bg-tertiary);
-            color: var(--text-light);
+        .badge-secondary {
+            background: #e2e8f0;
+            color: var(--text-primary);
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-
-            .header-actions {
+            .stats-bar {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .stats {
+            .stats-group {
                 justify-content: center;
             }
 
-            table {
-                font-size: 0.9em;
+            .data-table th,
+            .data-table td {
+                padding: 12px 16px;
             }
 
-            th, td {
-                padding: 10px;
-            }
-
-            .actions {
+            .actions-cell {
                 flex-direction: column;
-                gap: 5px;
+                gap: 4px;
             }
         }
     </style>
 </head>
 <body>
-    <%@ include file="../includes/sidebar.html" %>
+    <%@ include file="../includes/sidebar.jsp" %>
     <div class="content-with-sidebar">
+        <div class="content-wrapper">
     <%
         List<Vehicule> vehicules = (List<Vehicule>) request.getAttribute("vehicules");
         int totalVehicules = vehicules != null ? vehicules.size() : 0;
@@ -266,76 +298,77 @@
         }
     %>
 
-    <div class="container">
-        <h1>Liste des Véhicules</h1>
+            <div class="page-header">
+                <h1 class="page-title">Liste des Vehicules</h1>
+                <p class="page-subtitle">Gestion de la flotte de vehicules</p>
+            </div>
 
         <% if (request.getAttribute("success") != null) { %>
-            <div class="alert alert-success">
-                <%= request.getAttribute("success") %>
-            </div>
+            <div class="alert alert-success"><%= request.getAttribute("success") %></div>
         <% } %>
 
         <% if (request.getAttribute("error") != null) { %>
-            <div class="alert alert-error">
-                <%= request.getAttribute("error") %>
-            </div>
+            <div class="alert alert-error"><%= request.getAttribute("error") %></div>
         <% } %>
 
-        <div class="header-actions">
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="number"><%= totalVehicules %></div>
-                    <div class="label">Véhicules</div>
+            <div class="stats-bar">
+                <div class="stats-group">
+                    <div class="stat-card">
+                        <div class="stat-number"><%= totalVehicules %></div>
+                        <div class="stat-label">Vehicules</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number"><%= totalPlaces %></div>
+                        <div class="stat-label">Places</div>
+                    </div>
                 </div>
-                <div class="stat-item">
-                    <div class="number"><%= totalPlaces %></div>
-                    <div class="label">Places</div>
-                </div>
+                <a href="<%= request.getContextPath() %>/vehicule/form" class="btn btn-primary">Ajouter un vehicule</a>
             </div>
-            <a href="<%= request.getContextPath() %>/vehicule/form" class="btn-add">+ Ajouter un véhicule</a>
-        </div>
 
         <% if (vehicules != null && !vehicules.isEmpty()) { %>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Référence</th>
-                        <th>Marque</th>
-                        <th>Modèle</th>
-                        <th>Places</th>
-                        <th>Vitesse Moy.</th>
-                        <th>Carburant</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% for (Vehicule v : vehicules) { %>
+            <div class="data-card">
+                <table class="data-table">
+                    <thead>
                         <tr>
-                            <td><%= v.getId() %></td>
-                            <td><span class="badge badge-info"><%= v.getReference() %></span></td>
-                            <td><%= v.getMarque() %></td>
-                            <td><%= v.getModele() %></td>
-                            <td><%= v.getNombrePlaces() %></td>
-                            <td><%= v.getVitesseMoyenne() %> km/h</td>
-                            <td><span class="badge badge-success"><%= v.getTypeCarburant() != null ? v.getTypeCarburant().getNom() : "-" %></span></td>
-                            <td class="actions">
-                                <a href="<%= request.getContextPath() %>/vehicule/edit?id=<%= v.getId() %>" class="btn-edit">Modifier</a>
-                                <a href="<%= request.getContextPath() %>/vehicule/delete?id=<%= v.getId() %>" class="btn-delete" 
-                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')">Supprimer</a>
-                            </td>
+                            <th>ID</th>
+                            <th>Reference</th>
+                            <th>Marque</th>
+                            <th>Modele</th>
+                            <th>Places</th>
+                            <th>Vitesse Moy.</th>
+                            <th>Carburant</th>
+                            <th>Actions</th>
                         </tr>
-                    <% } %>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% for (Vehicule v : vehicules) { %>
+                            <tr>
+                                <td><%= v.getId() %></td>
+                                <td><span class="badge badge-primary"><%= v.getReference() %></span></td>
+                                <td><%= v.getMarque() %></td>
+                                <td><%= v.getModele() %></td>
+                                <td><%= v.getNombrePlaces() %></td>
+                                <td><%= v.getVitesseMoyenne() %> km/h</td>
+                                <td><span class="badge badge-secondary"><%= v.getTypeCarburant() != null ? v.getTypeCarburant().getNom() : "-" %></span></td>
+                                <td class="actions-cell">
+                                    <a href="<%= request.getContextPath() %>/vehicule/edit?id=<%= v.getId() %>" class="btn btn-sm btn-edit">Modifier</a>
+                                    <a href="<%= request.getContextPath() %>/vehicule/delete?id=<%= v.getId() %>" class="btn btn-sm btn-danger" 
+                                       onclick="return confirm('Etes-vous sur de vouloir supprimer ce vehicule ?')">Supprimer</a>
+                                </td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
         <% } else { %>
-            <div class="empty-message">
-                <div class="icon">🚗</div>
-                <h3>Aucun véhicule enregistré</h3>
-                <p>Commencez par ajouter votre premier véhicule</p>
+            <div class="data-card">
+                <div class="empty-state">
+                    <h3>Aucun vehicule enregistre</h3>
+                    <p>Commencez par ajouter votre premier vehicule</p>
+                </div>
             </div>
         <% } %>
-    </div>
+        </div>
     </div>
 </body>
 </html>
