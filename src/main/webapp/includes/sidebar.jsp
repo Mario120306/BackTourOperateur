@@ -1,51 +1,54 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" pageEncoding="UTF-8" %>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-    /* === THEME PROFESSIONNEL CLAIR === */
     :root {
-        --bg-primary: #ffffff;
-        --bg-secondary: #1f2937;
-        --bg-tertiary: #374151;
-        --bg-light: #f9fafb;
-        --accent-primary: #1f2937;
-        --accent-hover: #374151;
+        --primary: #0f172a;
+        --primary-light: #1e293b;
+        --primary-hover: #334155;
+        --accent: #3b82f6;
         --text-light: #ffffff;
-        --text-muted: #6b7280;
-        --text-dark: #1f2937;
-        --border-light: #e5e7eb;
-        --border-dark: #374151;
-        --success: #059669;
-        --danger: #dc2626;
+        --text-muted: #94a3b8;
+        --border-dark: #334155;
     }
 
     .sidebar {
         position: fixed;
         left: 0;
         top: 0;
-        width: 260px;
+        width: 280px;
         height: 100vh;
-        background: var(--bg-secondary);
-        padding: 20px 0;
-        box-shadow: 2px 0 15px rgba(0, 0, 0, 0.15);
+        background: var(--primary);
+        padding: 0;
         overflow-y: auto;
         z-index: 1000;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     .sidebar-header {
-        padding: 0 20px 20px;
-        border-bottom: 1px solid var(--bg-tertiary);
-        margin-bottom: 20px;
+        padding: 24px 24px 20px;
+        border-bottom: 1px solid var(--border-dark);
     }
 
-    .sidebar-header h2 {
-        color: var(--text-light);
-        font-size: 1.4em;
-        margin-bottom: 5px;
+    .sidebar-logo {
+        font-size: 1.25rem;
         font-weight: 700;
+        color: var(--text-light);
+        letter-spacing: -0.5px;
     }
 
-    .sidebar-header p {
-        color: #9ca3af;
-        font-size: 0.85em;
+    .sidebar-subtitle {
+        color: var(--text-muted);
+        font-size: 0.813rem;
+        margin-top: 4px;
+    }
+
+    .menu-section {
+        padding: 20px 24px 8px;
+        color: var(--text-muted);
+        font-size: 0.688rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
     }
 
     .sidebar-menu {
@@ -55,84 +58,68 @@
     }
 
     .sidebar-menu li {
-        margin-bottom: 2px;
+        margin: 2px 8px;
     }
 
     .sidebar-menu a {
-        display: flex;
-        align-items: center;
-        padding: 12px 20px;
-        color: #d1d5db;
+        display: block;
+        padding: 10px 16px;
+        color: var(--text-muted);
         text-decoration: none;
-        transition: all 0.2s ease;
-        font-size: 0.95em;
-        border-left: 3px solid transparent;
+        font-size: 0.875rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.15s ease;
     }
 
     .sidebar-menu a:hover {
-        background-color: var(--bg-tertiary);
+        background: var(--primary-hover);
         color: var(--text-light);
-        border-left-color: var(--text-light);
-        padding-left: 25px;
     }
 
     .sidebar-menu a.active {
-        background-color: var(--bg-tertiary);
-        border-left-color: var(--text-light);
+        background: var(--accent);
         color: var(--text-light);
-        font-weight: 600;
     }
 
-    .sidebar-menu a i {
-        margin-right: 12px;
-        font-size: 1.1em;
-        width: 20px;
-        text-align: center;
-    }
-
-    .menu-section {
-        padding: 15px 20px 5px;
-        color: #9ca3af;
-        font-size: 0.75em;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 600;
-    }
-
-    /* Adaptation pour les contenus avec sidebar */
     .content-with-sidebar {
-        margin-left: 260px;
+        margin-left: 280px;
         min-height: 100vh;
-        padding: 30px;
-        background: #ffffff;
+        background: #f8fafc;
+        padding: 40px;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
         .sidebar {
-            width: 0;
-            overflow: hidden;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
         }
 
         .sidebar.mobile-open {
-            width: 260px;
+            transform: translateX(0);
         }
 
         .content-with-sidebar {
             margin-left: 0;
+            padding: 80px 20px 20px;
         }
 
         .mobile-toggle {
-            display: block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             position: fixed;
-            top: 10px;
-            left: 10px;
+            top: 16px;
+            left: 16px;
             z-index: 1001;
-            background: #2c3e50;
-            color: white;
+            background: var(--primary);
+            color: var(--text-light);
             border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
+            font-size: 1.25rem;
         }
     }
 
@@ -141,57 +128,35 @@
     }
 </style>
 
-<button class="mobile-toggle" onclick="toggleSidebar()">&#9776; Menu</button>
+<button class="mobile-toggle" onclick="toggleSidebar()">&#9776;</button>
 
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <h2>🚐 Tour Operator</h2>
-        <p>Gestion & Simulation</p>
+        <div class="sidebar-logo">Tour Operateur</div>
+        <div class="sidebar-subtitle">Gestion des transferts</div>
     </div>
 
-    <div class="menu-section">Réservations</div>
+    <div class="menu-section">Reservations</div>
     <ul class="sidebar-menu">
         <li>
-            <a href="${pageContext.request.contextPath}/reservation/form">
-                <i>➕</i> Nouvelle réservation
-            </a>
+            <a href="${pageContext.request.contextPath}/reservation/form">Nouvelle reservation</a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/reservation/par-date/form">
-                <i>📅</i> Simulation par date
-            </a>
+            <a href="${pageContext.request.contextPath}/reservation/par-date/form">Simulation par date</a>
         </li>
     </ul>
 
-    <div class="menu-section">Véhicules</div>
+    <div class="menu-section">Vehicules</div>
     <ul class="sidebar-menu">
         <li>
-            <a href="${pageContext.request.contextPath}/vehicule/form">
-                <i>🚗</i> Nouveau véhicule
-            </a>
-        </li>
-        <li>
-            <a href="${pageContext.request.contextPath}/vehicule/list">
-                <i>🚙</i> Liste des véhicules
-            </a>
+            <a href="${pageContext.request.contextPath}/vehicule/list">Liste des vehicules</a>
         </li>
     </ul>
 
-    <div class="menu-section">Paramètres</div>
+    <div class="menu-section">Parametres</div>
     <ul class="sidebar-menu">
         <li>
-            <a href="${pageContext.request.contextPath}/parametre/form">
-                <i>⚙️</i> Configuration
-            </a>
-        </li>
-    </ul>
-
-    <div class="menu-section">SIMULATION</div>
-    <ul class="sidebar-menu">
-        <li>
-            <a href="${pageContext.request.contextPath}/simulation/assignement">
-                <i>🎯</i> Simulation d'assignement
-            </a>
+            <a href="${pageContext.request.contextPath}/parametre/form">Configuration</a>
         </li>
     </ul>
 </div>
@@ -203,17 +168,17 @@
 
     document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
         link.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
+            if (window.innerWidth <= 1024) {
                 document.getElementById('sidebar').classList.remove('mobile-open');
             }
         });
     });
 
-    // Marquer l'élément actif
-    document.addEventListener('DOMContentLoaded', () => {
-        const currentPath = window.location.pathname;
-        document.querySelectorAll('.sidebar-menu a').forEach(link => {
-            if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href'))) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-menu a').forEach(function(link) {
+            var href = link.getAttribute('href');
+            if (href && currentPath.includes(href)) {
                 link.classList.add('active');
             }
         });

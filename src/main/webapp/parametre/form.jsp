@@ -6,7 +6,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion des Paramètres</title>
+    <title>Gestion des Parametres</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,107 +18,117 @@
         }
 
         :root {
-            --bg-primary: #ffffff;
-            --bg-secondary: #1f2937;
-            --bg-tertiary: #374151;
-            --text-light: #ffffff;
-            --text-muted: #6b7280;
-            --text-dark: #1f2937;
-            --border-light: #e5e7eb;
-            --success: #059669;
-            --danger: #dc2626;
+            --primary: #0f172a;
+            --primary-light: #1e293b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --warning: #f59e0b;
+            --text-primary: #0f172a;
+            --text-secondary: #64748b;
+            --bg-primary: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --radius: 8px;
+            --radius-lg: 12px;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #ffffff;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 30px 20px;
+            line-height: 1.6;
         }
 
-        .page-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            width: 100%;
-            max-width: 900px;
+        .page-header {
+            margin-bottom: 32px;
         }
 
-        .container {
-            background: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            padding: 40px;
-            width: 100%;
-            border: 1px solid var(--border-light);
-        }
-
-        h2 {
-            color: var(--text-dark);
-            margin-bottom: 20px;
-            font-size: 1.3em;
-            border-bottom: 2px solid var(--bg-secondary);
-            padding-bottom: 10px;
-        }
-
-        h1 {
-            color: var(--text-dark);
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2em;
+        .page-header h1 {
+            font-size: 1.75rem;
             font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 0.938rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
         }
 
         .alert {
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            font-size: 0.875rem;
             font-weight: 500;
         }
 
         .alert-success {
-            background-color: #ecfdf5;
+            background: var(--success-bg);
             color: var(--success);
             border: 1px solid #a7f3d0;
         }
 
         .alert-error {
-            background-color: #fef2f2;
+            background: var(--danger-bg);
             color: var(--danger);
             border: 1px solid #fecaca;
         }
 
         .form-group {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
-            color: var(--text-dark);
+            font-size: 0.875rem;
             font-weight: 600;
-            font-size: 0.95em;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: var(--danger);
         }
 
         input[type="text"], textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid var(--border-light);
-            border-radius: 8px;
-            font-size: 1em;
-            transition: all 0.2s ease;
-            background-color: #f9fafb;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.938rem;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input[type="text"]:focus, textarea:focus {
             outline: none;
-            border-color: var(--bg-secondary);
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(22, 27, 34, 0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         textarea {
@@ -123,145 +136,163 @@
             min-height: 80px;
         }
 
+        input::placeholder, textarea::placeholder {
+            color: var(--text-secondary);
+        }
+
         .btn-container {
             display: flex;
-            gap: 15px;
-            margin-top: 30px;
+            gap: 12px;
+            margin-top: 24px;
         }
 
         .btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            font-size: 0.875rem;
             font-weight: 600;
+            font-family: inherit;
+            border: none;
+            border-radius: var(--radius);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
             text-decoration: none;
-            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+            color: var(--text-primary);
         }
 
         .btn-danger {
-            background: var(--danger);
-            color: white;
-            padding: 6px 14px;
-            font-size: 0.85em;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            background: var(--danger-bg);
+            color: var(--danger);
+            padding: 8px 16px;
+            font-size: 0.813rem;
         }
 
         .btn-danger:hover {
-            background: #b91c1c;
+            background: var(--danger);
+            color: white;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
 
-        thead tr {
-            background: var(--bg-secondary);
-            color: var(--text-light);
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid var(--border-light);
+        thead {
+            background: var(--bg-primary);
         }
 
         th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.75rem;
             font-weight: 600;
-            font-size: 0.9em;
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+            color: var(--text-primary);
         }
 
         tbody tr:hover {
-            background-color: #f9fafb;
+            background: var(--bg-primary);
         }
 
         .badge-code {
-            background-color: var(--bg-secondary);
-            color: var(--text-light);
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-family: monospace;
-            font-size: 0.9em;
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
             font-weight: 600;
+            font-family: 'Monaco', 'Consolas', monospace;
         }
 
         .no-data {
             text-align: center;
-            color: var(--text-muted);
-            padding: 30px;
-            font-style: italic;
+            color: var(--text-secondary);
+            padding: 48px 16px;
         }
 
-        .btn-primary {
-            background: var(--bg-secondary);
-            color: var(--text-light);
-        }
+        @media (max-width: 768px) {
+            .card {
+                padding: 24px;
+            }
 
-        .btn-primary:hover {
-            background: var(--bg-tertiary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(31, 41, 55, 0.3);
-        }
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
 
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-light);
-        }
-
-        .btn-secondary:hover {
-            background: var(--accent-hover);
-        }
-
-        @media (max-width: 600px) {
-            .container { padding: 30px 20px; }
-            h1 { font-size: 1.5em; }
+            .btn-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
-    <%@ include file="../includes/sidebar.html" %>
+    <%@ include file="../includes/sidebar.jsp" %>
     <div class="content-with-sidebar">
-    <div class="page-wrapper">
-
         <%
             List<Parametre> parametres = (List<Parametre>) request.getAttribute("parametres");
         %>
 
-        <!-- ===== FORMULAIRE D'INSERTION ===== -->
-        <div class="container">
-            <h1>&#9881; Gestion des Paramètres</h1>
+        <div class="page-header">
+            <h1>Gestion des Parametres</h1>
+            <p>Configurer les parametres systeme de l'application</p>
+        </div>
 
-            <% if (request.getAttribute("success") != null) { %>
-                <div class="alert alert-success"><%= request.getAttribute("success") %></div>
-            <% } %>
-            <% if (request.getAttribute("error") != null) { %>
-                <div class="alert alert-error"><%= request.getAttribute("error") %></div>
-            <% } %>
+        <% if (request.getAttribute("success") != null) { %>
+            <div class="alert alert-success"><%= request.getAttribute("success") %></div>
+        <% } %>
+        <% if (request.getAttribute("error") != null) { %>
+            <div class="alert alert-error"><%= request.getAttribute("error") %></div>
+        <% } %>
 
-            <h2>Ajouter un paramètre</h2>
+        <div class="card">
+            <h2 class="card-title">Ajouter un parametre</h2>
 
             <form action="<%= request.getContextPath() %>/parametre/insert" method="post">
-
                 <div class="form-group">
-                    <label for="code">Code <span style="color:red">*</span></label>
+                    <label for="code">Code <span class="required">*</span></label>
                     <input type="text" id="code" name="code" required
                            placeholder="Ex: TVA_RATE, MAX_RESERVATION..."
                            maxlength="50">
                 </div>
 
                 <div class="form-group">
-                    <label for="valeur">Valeur <span style="color:red">*</span></label>
+                    <label for="valeur">Valeur <span class="required">*</span></label>
                     <input type="text" id="valeur" name="valeur" required
                            placeholder="Ex: 20, true, http://..."
                            maxlength="100">
@@ -270,56 +301,55 @@
                 <div class="form-group">
                     <label for="description">Description</label>
                     <textarea id="description" name="description"
-                              placeholder="Description optionnelle du paramètre..."
+                              placeholder="Description optionnelle du parametre..."
                               maxlength="255"></textarea>
                 </div>
 
                 <div class="btn-container">
-                    <button type="reset" class="btn btn-secondary">Réinitialiser</button>
-                    <button type="submit" class="btn btn-primary">&#43; Ajouter le paramètre</button>
+                    <button type="reset" class="btn btn-secondary">Reinitialiser</button>
+                    <button type="submit" class="btn btn-primary">Ajouter le parametre</button>
                 </div>
             </form>
         </div>
 
-        <!-- ===== LISTE DES PARAMETRES EXISTANTS ===== -->
-        <div class="container">
-            <h2>Liste des paramètres</h2>
+        <div class="card">
+            <h2 class="card-title">Liste des parametres</h2>
 
             <% if (parametres == null || parametres.isEmpty()) { %>
-                <p class="no-data">Aucun paramètre enregistré.</p>
+                <p class="no-data">Aucun parametre enregistre.</p>
             <% } else { %>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Code</th>
-                            <th>Valeur</th>
-                            <th>Description</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% for (Parametre p : parametres) { %>
-                        <tr>
-                            <td><%= p.getId() %></td>
-                            <td><span class="badge-code"><%= p.getCode() %></span></td>
-                            <td><%= p.getValeur() %></td>
-                            <td><%= p.getDescription() != null ? p.getDescription() : "-" %></td>
-                            <td>
-                                <form action="<%= request.getContextPath() %>/parametre/delete" method="post"
-                                      onsubmit="return confirm('Supprimer le paramètre &#34;<%= p.getCode() %>&#34; ?');">
-                                    <input type="hidden" name="id" value="<%= p.getId() %>">
-                                    <button type="submit" class="btn-danger">Supprimer</button>
-                                </form>
-                            </td>
-                        </tr>
-                        <% } %>
-                    </tbody>
-                </table>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Code</th>
+                                <th>Valeur</th>
+                                <th>Description</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% for (Parametre p : parametres) { %>
+                            <tr>
+                                <td><%= p.getId() %></td>
+                                <td><span class="badge-code"><%= p.getCode() %></span></td>
+                                <td><%= p.getValeur() %></td>
+                                <td><%= p.getDescription() != null ? p.getDescription() : "-" %></td>
+                                <td>
+                                    <form action="<%= request.getContextPath() %>/parametre/delete" method="post"
+                                          onsubmit="return confirm('Supprimer le parametre?');">
+                                        <input type="hidden" name="id" value="<%= p.getId() %>">
+                                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
             <% } %>
         </div>
-
-    </div>
     </div>
 </body>
 </html>

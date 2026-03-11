@@ -16,7 +16,12 @@ sprint 3
 sprint 4
     TL Carolle
     Regroupement reservation par véhicule Mirana
-     
+    Script reinitialisation Mario
+
+sprint 5
+    TL Mario
+    Ajout temps d'attente Carolle
+    
     
 
       
