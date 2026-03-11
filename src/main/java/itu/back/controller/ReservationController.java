@@ -264,9 +264,12 @@ public class ReservationController {
                 // Récupérer tous les véhicules disponibles
                 List<Vehicule> tousVehicules = getAllVehicules();
 
+                // Récupérer le temps d'attente pour regroupement
+                int tempsAttente = getTempsAttenteMinutes(conn);
+
                 // SIMULATION : Assigner les véhicules aux réservations selon l'algorithme
                 SimulationService.ResultatSimulation resultatSimulation = SimulationService
-                        .simulerAssignation(reservations, tousVehicules, conn);
+                        .simulerAssignation(reservations, tousVehicules, conn, tempsAttente);
 
                 Map<Vehicule, List<Reservation>> vehiculesAvecReservations = resultatSimulation
                         .getVehiculesAvecReservations();
@@ -292,6 +295,7 @@ public class ReservationController {
                 mv.addItem("nombreReservationsTotal", reservations.size());
                 mv.addItem("nombreReservationsAssignees", nombreReservationsAssignees);
                 mv.addItem("nombreReservationsNonAssignees", reservationsNonAssignees.size());
+                mv.addItem("tempsAttente", tempsAttente);
             }
             mv.setView("/reservation/par-date.jsp");
         } catch (SQLException e) {
@@ -432,9 +436,12 @@ public class ReservationController {
                 // Récupérer tous les véhicules
                 List<Vehicule> vehicules = getAllVehicules();
 
+                // Récupérer le temps d'attente pour regroupement
+                int tempsAttente = getTempsAttenteMinutes(conn);
+
                 // Simuler l'assignation
                 SimulationService.ResultatSimulation resultat = SimulationService.simulerAssignation(reservations,
-                        vehicules, conn);
+                        vehicules, conn, tempsAttente);
 
                 // Enregistrer les assignations en base de données
                 Map<Vehicule, List<Reservation>> assignations = resultat.getVehiculesAvecReservations();
@@ -497,5 +504,28 @@ public class ReservationController {
         } catch (Exception e) {
             return JsonResponse.serverError("Erreur lors de la réinitialisation : " + e.getMessage());
         }
+    }
+
+    /**
+     * Récupère le paramètre TEMPS_ATTENTE_MINUTES depuis la base de données.
+     * @return Le temps d'attente en minutes, 0 si non trouvé
+     */
+    private int getTempsAttenteMinutes(Connection conn) {
+        try {
+            String sql = "SELECT valeur FROM parametre WHERE code = 'TEMPS_ATTENTE_MINUTES'";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int val = Integer.parseInt(rs.getString("valeur"));
+                rs.close();
+                stmt.close();
+                return val;
+            }
+            rs.close();
+            stmt.close();
+        } catch (Exception e) {
+            // Si erreur, pas de regroupement
+        }
+        return 0;
     }
 }

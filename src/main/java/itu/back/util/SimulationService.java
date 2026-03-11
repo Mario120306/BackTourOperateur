@@ -172,20 +172,31 @@ public class SimulationService {
     }
 
     /**
-     * Simule l'assignation des véhicules aux réservations pour une date donnée
-     * 
-     * @param reservations Liste des réservations pour la date
-     * @param vehicules    Liste de tous les véhicules disponibles
-     * @param conn         Connexion à la base de données pour calculer les
-     *                     distances
-     * @return ResultatSimulation contenant les véhicules assignés et les
-     *         réservations non assignées
-     * @throws SQLException
+     * Simule l'assignation des véhicules aux réservations (sans regroupement)
      */
     public static ResultatSimulation simulerAssignation(
             List<Reservation> reservations,
             List<Vehicule> vehicules,
             Connection conn) throws SQLException {
+        return simulerAssignation(reservations, vehicules, conn, 0);
+    }
+
+    /**
+     * Simule l'assignation des véhicules aux réservations pour une date donnée
+     * avec regroupement par temps d'attente.
+     * 
+     * @param reservations         Liste des réservations pour la date
+     * @param vehicules            Liste de tous les véhicules disponibles
+     * @param conn                 Connexion à la base de données
+     * @param tempsAttenteMinutes  Durée du temps d'attente pour regrouper les départs (0 = pas de regroupement)
+     * @return ResultatSimulation
+     * @throws SQLException
+     */
+    public static ResultatSimulation simulerAssignation(
+            List<Reservation> reservations,
+            List<Vehicule> vehicules,
+            Connection conn,
+            int tempsAttenteMinutes) throws SQLException {
 
         // Résultat final
         ResultatSimulation resultat = new ResultatSimulation();
@@ -221,51 +232,68 @@ public class SimulationService {
         // Liste pour garder trace des réservations qui n'ont pas pu être assignées
         List<Reservation> reservationsImpossiblesAAssigner = new ArrayList<>();
 
-        // ETAPE 1 : Trier par heure d'arrivée puis par nombre de passagers
-        // (décroissant)
+        // ETAPE 1 : Trier par heure d'arrivée
+        reservationsNonAssignees.sort((r1, r2) -> r1.getDateHeureArrive().compareTo(r2.getDateHeureArrive()));
+
+        // ETAPE 1b : Regrouper par temps d'attente et déterminer l'heure de départ groupée
+        // L'heure de départ du groupe = l'heure d'arrivée la plus tardive du groupe
+        Map<Integer, Timestamp> heureDepartParReservation = new HashMap<>();
+        if (tempsAttenteMinutes > 0) {
+            List<List<Reservation>> groupes = regroupeParTempsAttente(reservationsNonAssignees, tempsAttenteMinutes);
+            for (List<Reservation> groupe : groupes) {
+                Timestamp heureDepartGroupe = groupe.get(groupe.size() - 1).getDateHeureArrive();
+                for (Reservation r : groupe) {
+                    heureDepartParReservation.put(r.getId(), heureDepartGroupe);
+                }
+            }
+        } else {
+            // Pas de regroupement : chaque réservation garde son heure d'arrivée
+            for (Reservation r : reservationsNonAssignees) {
+                heureDepartParReservation.put(r.getId(), r.getDateHeureArrive());
+            }
+        }
+
+        // ETAPE 2 : Trier par heure de départ groupée puis par nombre de passagers (décroissant)
         reservationsNonAssignees.sort((r1, r2) -> {
-            // D'abord par heure d'arrivée
-            int compareHeure = r1.getDateHeureArrive().compareTo(r2.getDateHeureArrive());
+            Timestamp h1 = heureDepartParReservation.get(r1.getId());
+            Timestamp h2 = heureDepartParReservation.get(r2.getId());
+            int compareHeure = h1.compareTo(h2);
             if (compareHeure != 0)
                 return compareHeure;
-            // Ensuite par nombre de passagers (décroissant)
             return Integer.compare(r2.getNombrePassage(), r1.getNombrePassage());
         });
 
-        // ETAPE 2 & 3 : Assigner les réservations (uniquement celles avec la même
-        // heure)
+        // ETAPE 3 : Assigner les réservations (celles avec le même départ groupé)
         while (!reservationsNonAssignees.isEmpty()) {
             Reservation reservation = reservationsNonAssignees.get(0);
+            Timestamp heureDepartReservation = heureDepartParReservation.get(reservation.getId());
             boolean assignee = false;
 
             // Chercher un véhicule disponible avec assez de places
             for (VehiculeAvecCapacite vehiculeAvecCap : vehiculesDisponibles) {
-                // Vérifier si le véhicule est vide OU s'il a déjà des réservations à la même
-                // heure
-                boolean memeHeure = vehiculeAvecCap.reservations.isEmpty() ||
-                        reservation.getDateHeureArrive().equals(vehiculeAvecCap.getHeureArriveePremiere());
+                // Vérifier si le véhicule est vide OU s'il a des réservations du même groupe de départ
+                boolean memeGroupe = vehiculeAvecCap.reservations.isEmpty() ||
+                        heureDepartParReservation.get(vehiculeAvecCap.reservations.get(0).getId())
+                                .equals(heureDepartReservation);
 
-                if (memeHeure && vehiculeAvecCap.peutAccueillir(reservation.getNombrePassage())) {
+                if (memeGroupe && vehiculeAvecCap.peutAccueillir(reservation.getNombrePassage())) {
                     // Assigner la réservation
                     vehiculeAvecCap.ajouterReservation(reservation);
                     reservationsNonAssignees.remove(0);
                     assignee = true;
 
-                    // OPTIMISATION : Chercher d'autres réservations à ajouter si le véhicule n'est
-                    // pas plein
-                    // MAIS UNIQUEMENT celles avec la même heure d'arrivée
+                    // OPTIMISATION : Chercher d'autres réservations du même groupe à ajouter
                     if (vehiculeAvecCap.placesRestantes > 0) {
-                        Timestamp heureVehicule = vehiculeAvecCap.getHeureArriveePremiere();
+                        Timestamp heureVehicule = heureDepartParReservation
+                                .get(vehiculeAvecCap.reservations.get(0).getId());
                         List<Reservation> aSupprimer = new ArrayList<>();
 
                         for (Reservation autreReservation : reservationsNonAssignees) {
-                            // Ne prendre que les réservations à la même heure
-                            if (autreReservation.getDateHeureArrive().equals(heureVehicule) &&
+                            if (heureDepartParReservation.get(autreReservation.getId()).equals(heureVehicule) &&
                                     vehiculeAvecCap.peutAccueillir(autreReservation.getNombrePassage())) {
                                 vehiculeAvecCap.ajouterReservation(autreReservation);
                                 aSupprimer.add(autreReservation);
 
-                                // Si le véhicule est maintenant plein, arrêter
                                 if (vehiculeAvecCap.placesRestantes == 0) {
                                     break;
                                 }
@@ -332,8 +360,13 @@ public class SimulationService {
             return;
         }
 
-        // Toutes les réservations ont la même heure d'arrivée
+        // L'heure de départ = l'heure d'arrivée la plus tardive du groupe
         Timestamp heureArrivee = reservations.get(0).getDateHeureArrive();
+        for (Reservation r : reservations) {
+            if (r.getDateHeureArrive().after(heureArrivee)) {
+                heureArrivee = r.getDateHeureArrive();
+            }
+        }
         vehiculeAvecCap.segments = new ArrayList<>();
 
         // Récupérer les hôtels uniques et leurs informations
@@ -513,6 +546,54 @@ public class SimulationService {
         }
 
         return ordreOptimal;
+    }
+
+    /**
+     * Regroupe les réservations par fenêtre de temps d'attente.
+     * La première arrivée ouvre une fenêtre de tempsAttenteMinutes.
+     * Toutes les réservations arrivant dans cette fenêtre sont regroupées.
+     * Le départ effectif du groupe sera l'heure d'arrivée la plus tardive.
+     *
+     * @param reservationsTriees  Réservations triées par heure d'arrivée croissante
+     * @param tempsAttenteMinutes Durée de la fenêtre d'attente en minutes
+     * @return Liste de groupes de réservations
+     */
+    private static List<List<Reservation>> regroupeParTempsAttente(
+            List<Reservation> reservationsTriees, int tempsAttenteMinutes) {
+        List<List<Reservation>> groupes = new ArrayList<>();
+        if (reservationsTriees.isEmpty()) {
+            return groupes;
+        }
+
+        List<Reservation> groupeActuel = new ArrayList<>();
+        Timestamp debutFenetre = null;
+
+        for (Reservation r : reservationsTriees) {
+            if (debutFenetre == null) {
+                // Première réservation : ouvre une nouvelle fenêtre
+                debutFenetre = r.getDateHeureArrive();
+                groupeActuel.add(r);
+            } else {
+                long diffMs = r.getDateHeureArrive().getTime() - debutFenetre.getTime();
+                long diffMinutes = diffMs / (60 * 1000);
+                if (diffMinutes <= tempsAttenteMinutes) {
+                    // Dans la fenêtre : ajouter au groupe actuel
+                    groupeActuel.add(r);
+                } else {
+                    // Hors fenêtre : sauvegarder le groupe actuel et en commencer un nouveau
+                    groupes.add(groupeActuel);
+                    groupeActuel = new ArrayList<>();
+                    groupeActuel.add(r);
+                    debutFenetre = r.getDateHeureArrive();
+                }
+            }
+        }
+
+        if (!groupeActuel.isEmpty()) {
+            groupes.add(groupeActuel);
+        }
+
+        return groupes;
     }
 
     /**

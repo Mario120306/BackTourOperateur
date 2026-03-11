@@ -1,8 +1,24 @@
 -- ============================================
--- SCRIPT DE TEST - REGROUPEMENT PAR HEURE
+-- SCRIPT DE TEST - REGROUPEMENT PAR TEMPS D'ATTENTE
 -- ============================================
 -- Ce script permet de tester le regroupement des réservations
--- selon l'heure d'arrivée identique
+-- selon le temps d'attente paramétrable (TEMPS_ATTENTE_MINUTES).
+--
+-- RÈGLE : La première arrivée ouvre une fenêtre de X minutes.
+-- Toutes les réservations arrivant dans cette fenêtre sont regroupées.
+-- Le départ effectif du groupe = l'heure d'arrivée la plus tardive du groupe.
+--
+-- Exemple avec TEMPS_ATTENTE_MINUTES = 30 :
+--   Réservations à 08:05, 08:15, 08:20
+--   → Fenêtre ouverte à 08:05, fermeture à 08:35
+--   → Les 3 sont dans le même groupe, départ = 08:20 (dernière arrivée)
+
+-- ============================================
+-- S'assurer que le paramètre est configuré
+-- ============================================
+INSERT INTO parametre (code, valeur, description)
+VALUES ('TEMPS_ATTENTE_MINUTES', '30', 'Durée d attente en minutes pour regrouper les départs')
+ON CONFLICT (code) DO UPDATE SET valeur = '30';
 
 -- Afficher les réservations existantes pour le 15 mars 2026
 SELECT 
@@ -18,34 +34,61 @@ WHERE DATE(r.date_heure_arrive) = '2026-03-15'
 ORDER BY r.date_heure_arrive;
 
 -- ============================================
--- TEST 1 : Même heure (08:00)
+-- TEST 1 : Groupe avec temps d'attente (08:05-08:20)
 -- ============================================
--- Modifier 3 réservations pour qu'elles aient la même heure
--- Ces 3 réservations devraient être regroupées ensemble
+-- 3 réservations dans une fenêtre de 30 min
+-- Fenêtre ouverte à 08:05, tout jusqu'à 08:35 est regroupé
+-- Départ effectif = 08:20 (dernière arrivée du groupe)
 
 UPDATE reservation 
-SET date_heure_arrive = '2026-03-15 08:00:00'
-WHERE id IN (1, 2, 3);
+SET date_heure_arrive = '2026-03-15 08:05:00'
+WHERE id = 1;
+
+UPDATE reservation 
+SET date_heure_arrive = '2026-03-15 08:15:00'
+WHERE id = 2;
+
+UPDATE reservation 
+SET date_heure_arrive = '2026-03-15 08:20:00'
+WHERE id = 3;
 
 -- ============================================
--- TEST 2 : Heure différente (10:00)
+-- TEST 2 : Deuxième groupe (10:00-10:25)
 -- ============================================
--- Modifier 2 réservations pour une autre heure
--- Ces 2 réservations devraient être dans un autre véhicule
+-- 2 réservations dans une nouvelle fenêtre (bien après le groupe 1)
+-- Départ effectif = 10:25
 
 UPDATE reservation 
 SET date_heure_arrive = '2026-03-15 10:00:00'
-WHERE id IN (4, 5);
+WHERE id = 4;
+
+UPDATE reservation 
+SET date_heure_arrive = '2026-03-15 10:25:00'
+WHERE id = 5;
 
 -- ============================================
--- TEST 3 : Heure isolée (14:00)
+-- TEST 3 : Réservation isolée (14:00)
 -- ============================================
--- Modifier 1 réservation pour une heure isolée
--- Cette réservation devrait être seule dans son véhicule
+-- Seule dans sa fenêtre → départ = 14:00
 
 UPDATE reservation 
 SET date_heure_arrive = '2026-03-15 14:00:00'
 WHERE id = 6;
+
+-- ============================================
+-- TEST 4 : Juste à la limite de la fenêtre
+-- ============================================
+-- 08:05 + 30 min = 08:35
+-- Réservation à 08:34 → DOIT être dans le groupe 1
+-- Réservation à 08:36 → NE DOIT PAS être dans le groupe 1
+
+UPDATE reservation 
+SET date_heure_arrive = '2026-03-15 08:34:00'
+WHERE id = 7;
+
+UPDATE reservation 
+SET date_heure_arrive = '2026-03-15 09:30:00'
+WHERE id = 8;
 
 -- Vérifier les modifications
 SELECT 
@@ -62,34 +105,25 @@ WHERE DATE(r.date_heure_arrive) = '2026-03-15'
 ORDER BY r.date_heure_arrive;
 
 -- ============================================
--- RÉSULTAT ATTENDU :
+-- RÉSULTAT ATTENDU (TEMPS_ATTENTE = 30 min) :
 -- ============================================
--- Groupe 08:00 (IDs 1, 2, 3) → Véhicule 1 (si capacité suffisante)
--- Groupe 10:00 (IDs 4, 5)    → Véhicule 2 (si capacité suffisante)  
--- Groupe 14:00 (ID 6)        → Véhicule 3 (si capacité suffisante)
+-- Groupe 1 (fenêtre 08:05-08:35) :
+--   IDs 1 (08:05), 2 (08:15), 3 (08:20), 7 (08:34)
+--   → Départ effectif = 08:34 (dernière arrivée)
+--   → Assignés au même véhicule (si capacité suffisante)
 --
--- Chaque véhicule affichera :
--- - Heure de départ (calculée en remontant depuis l'arrivée)
--- - Heure de retour (après avoir déposé tous les passagers)
--- - Durée totale du trajet
+-- Groupe 2 (fenêtre 09:30-10:00) :
+--   ID 8 (09:30)
+--   → Départ effectif = 09:30
+--
+-- Groupe 3 (fenêtre 10:00-10:30) :
+--   IDs 4 (10:00), 5 (10:25)
+--   → Départ effectif = 10:25
+--
+-- Groupe 4 (fenêtre 14:00-14:30) :
+--   ID 6 (14:00)
+--   → Départ effectif = 14:00
 -- ============================================
-
--- ============================================
--- TEST AVANCÉ : Heures très proches mais différentes
--- ============================================
--- Pour tester que seules les heures EXACTEMENT identiques sont regroupées
-
--- Créer deux groupes avec 1 minute de différence
-UPDATE reservation 
-SET date_heure_arrive = '2026-03-15 12:00:00'
-WHERE id = 7;
-
-UPDATE reservation 
-SET date_heure_arrive = '2026-03-15 12:01:00'
-WHERE id = 8;
-
--- Ces deux réservations NE DOIVENT PAS être dans le même véhicule
--- malgré seulement 1 minute de différence
 
 -- ============================================
 -- RESTAURER LES DONNÉES ORIGINALES
