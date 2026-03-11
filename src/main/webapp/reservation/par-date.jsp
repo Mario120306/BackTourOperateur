@@ -677,6 +677,7 @@
             Integer nombreReservationsTotal = (Integer) request.getAttribute("nombreReservationsTotal");
             Integer nombreReservationsAssignees = (Integer) request.getAttribute("nombreReservationsAssignees");
             Integer nombreReservationsNonAssignees = (Integer) request.getAttribute("nombreReservationsNonAssignees");
+            Integer tempsAttente = (Integer) request.getAttribute("tempsAttente");
             
             if (dateRecherche != null && !dateRecherche.isEmpty()) {
             %>
@@ -687,6 +688,9 @@
                         <span class="stat-badge success"><%= nombreReservationsAssignees != null ? nombreReservationsAssignees : 0 %> / <%= nombreReservationsTotal != null ? nombreReservationsTotal : 0 %> assignee(s)</span>
                         <% if (nombreReservationsNonAssignees != null && nombreReservationsNonAssignees > 0) { %>
                             <span class="stat-badge warning"><%= nombreReservationsNonAssignees %> non assignee(s)</span>
+                        <% } %>
+                        <% if (tempsAttente != null && tempsAttente > 0) { %>
+                            <span class="stat-badge primary">Temps d'attente : <%= tempsAttente %> min</span>
                         <% } %>
                     </div>
                 </div>
@@ -823,11 +827,13 @@
                                             <th>Client</th>
                                             <th>Hotel</th>
                                             <th>Ville</th>
+                                            <th>Arrivee Vol</th>
                                             <th>Passagers</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <% 
+                                        SimpleDateFormat timeFormat2 = new SimpleDateFormat("HH:mm");
                                         for (Reservation r : reservations) { 
                                             Client client = r.getClient();
                                             Hotel hotel = r.getHotel();
@@ -842,6 +848,9 @@
                                             </td>
                                             <td>
                                                 <div class="cell-secondary"><%= hotel != null ? hotel.getVille() : "-" %></div>
+                                            </td>
+                                            <td>
+                                                <div class="cell-primary"><%= r.getDateHeureArrive() != null ? timeFormat2.format(r.getDateHeureArrive()) : "-" %></div>
                                             </td>
                                             <td>
                                                 <span class="passengers-badge"><%= r.getNombrePassage() %> pers.</span>
