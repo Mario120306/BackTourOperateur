@@ -671,7 +671,7 @@
             <% 
             String dateRecherche = (String) request.getAttribute("dateRecherche");
             Map<Vehicule, List<Reservation>> vehiculesAvecReservations = (Map<Vehicule, List<Reservation>>) request.getAttribute("vehiculesAvecReservations");
-            Map<Vehicule, SimulationService.InfosTrajet> infosTrajetParVehicule = (Map<Vehicule, SimulationService.InfosTrajet>) request.getAttribute("infosTrajetParVehicule");
+            Map<Vehicule, List<SimulationService.InfosTrajet>> infosTrajetParVehicule = (Map<Vehicule, List<SimulationService.InfosTrajet>>) request.getAttribute("infosTrajetParVehicule");
             List<Reservation> reservationsNonAssignees = (List<Reservation>) request.getAttribute("reservationsNonAssignees");
             Integer nombreVehicules = (Integer) request.getAttribute("nombreVehicules");
             Integer nombreReservationsTotal = (Integer) request.getAttribute("nombreReservationsTotal");
@@ -763,10 +763,16 @@
                         </div>
 
                         <% 
-                        SimulationService.InfosTrajet infosTrajet = (infosTrajetParVehicule != null) ? infosTrajetParVehicule.get(vehicule) : null;
-                        if (infosTrajet != null && !reservations.isEmpty()) { 
+                        List<SimulationService.InfosTrajet> listeTrajets = (infosTrajetParVehicule != null) ? infosTrajetParVehicule.get(vehicule) : null;
+                        if (listeTrajets != null && !listeTrajets.isEmpty() && !reservations.isEmpty()) { 
                             SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                            int numTrajet = 0;
+                            for (SimulationService.InfosTrajet infosTrajet : listeTrajets) {
+                                numTrajet++;
                         %>
+                            <% if (listeTrajets.size() > 1) { %>
+                                <h4 style="margin: 16px 24px 0; color: var(--text-secondary); font-size: 0.85rem;">Trajet #<%= numTrajet %></h4>
+                            <% } %>
                             <div class="timing-section">
                                 <div class="timing-item">
                                     <div class="timing-label">Depart Aeroport</div>
@@ -817,7 +823,9 @@
                                     </div>
                                 </div>
                             <% } %>
-                        <% } %>
+                        <% 
+                            } // end for each trajet
+                        } %>
 
                         <% if (!reservations.isEmpty()) { %>
                             <div class="table-section">
