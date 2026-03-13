@@ -274,7 +274,7 @@ public class ReservationController {
                 Map<Vehicule, List<Reservation>> vehiculesAvecReservations = resultatSimulation
                         .getVehiculesAvecReservations();
                 List<Reservation> reservationsNonAssignees = resultatSimulation.getReservationsNonAssignees();
-                Map<Vehicule, SimulationService.InfosTrajet> infosTrajetParVehicule = resultatSimulation
+                Map<Vehicule, List<SimulationService.InfosTrajet>> infosTrajetParVehicule = resultatSimulation
                         .getInfosTrajetParVehicule();
 
                 // Compter les véhicules utilisés (avec au moins une réservation)
@@ -516,7 +516,8 @@ public class ReservationController {
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                int val = Integer.parseInt(rs.getString("valeur"));
+                String raw = rs.getString("valeur");
+                int val = Integer.parseInt(raw != null ? raw.trim() : "20");
                 rs.close();
                 stmt.close();
                 return val;
@@ -524,8 +525,8 @@ public class ReservationController {
             rs.close();
             stmt.close();
         } catch (Exception e) {
-            // Si erreur, pas de regroupement
+            // Si erreur, garder un regroupement par défaut
         }
-        return 0;
+        return 20;
     }
 }
