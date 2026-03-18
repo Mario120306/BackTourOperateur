@@ -21,10 +21,18 @@ sprint 4
 sprint 5
     TL Mario
     Ajout temps d'attente Carolle
+    Test + script Mirana
     
 sprint 6 
     TL Mirana
-    Ajout nombre de voyage
+    Ajout nombre de voyage Mario
+    Test + script Carolle
+
+sprint 7
+    TL Carolle
+    Implémentation distribution des réservations Mirana
+    Test + script Mario
+
 
 
       
