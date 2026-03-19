@@ -21,8 +21,11 @@ import itu.back.model.Vehicule;
  * 
  * Algorithme :
  * 1. Trier les réservations par nombre de passagers (décroissant)
- * 2. Pour chaque réservation, assigner à un véhicule disponible
- * 3. Optimiser en ajoutant d'autres réservations si le véhicule n'est pas plein
+ * 2. Pour chaque réservation, parcourir les véhicules disponibles par ordre
+ * de priorité et leur affecter des passagers
+ * 3. Si la capacité restante d'un véhicule est insuffisante, on peut
+ * diviser la réservation et n'affecter qu'une partie des passagers,
+ * puis essayer d'assigner le reste sur d'autres véhicules du même groupe
  * 4. Calculer les horaires de départ et retour selon les distances et vitesse
  * moyenne
  */
@@ -38,11 +41,14 @@ public class SimulationService {
         private Map<Vehicule, List<Reservation>> vehiculesAvecReservations;
         private List<Reservation> reservationsNonAssignees;
         private Map<Vehicule, List<InfosTrajet>> infosTrajetParVehicule;
+        // Heure de depart par "ligne" de reservation dans la simulation
+        private Map<Reservation, Timestamp> heureDepartParReservation;
 
         public ResultatSimulation() {
             this.vehiculesAvecReservations = new HashMap<>();
             this.reservationsNonAssignees = new ArrayList<>();
             this.infosTrajetParVehicule = new HashMap<>();
+            this.heureDepartParReservation = new HashMap<>();
         }
 
         public Map<Vehicule, List<Reservation>> getVehiculesAvecReservations() {
@@ -67,6 +73,14 @@ public class SimulationService {
 
         public void setInfosTrajetParVehicule(Map<Vehicule, List<InfosTrajet>> infosTrajetParVehicule) {
             this.infosTrajetParVehicule = infosTrajetParVehicule;
+        }
+
+        public Map<Reservation, Timestamp> getHeureDepartParReservation() {
+            return heureDepartParReservation;
+        }
+
+        public void setHeureDepartParReservation(Map<Reservation, Timestamp> heureDepartParReservation) {
+            this.heureDepartParReservation = heureDepartParReservation;
         }
     }
 
@@ -223,10 +237,11 @@ public class SimulationService {
      * Règle de disponibilité : un véhicule déjà parti ne peut être réassigné
      * que s'il est déjà revenu (heure_retour <= heure de départ du nouveau groupe).
      * 
-     * @param reservations         Liste des réservations pour la date
-     * @param vehicules            Liste de tous les véhicules disponibles
-     * @param conn                 Connexion à la base de données
-     * @param tempsAttenteMinutes  Durée du temps d'attente pour regrouper les départs (0 = pas de regroupement)
+     * @param reservations        Liste des réservations pour la date
+     * @param vehicules           Liste de tous les véhicules disponibles
+     * @param conn                Connexion à la base de données
+     * @param tempsAttenteMinutes Durée du temps d'attente pour regrouper les
+     *                            départs (0 = pas de regroupement)
      * @return ResultatSimulation
      * @throws SQLException
      */
@@ -248,7 +263,8 @@ public class SimulationService {
         }
 
         // Note : le tri des véhicules se fait dynamiquement à chaque assignation
-        // selon les critères : moins de trajets, places les plus proches, diesel prioritaire
+        // selon les critères : moins de trajets, places les plus proches, diesel
+        // prioritaire
 
         // Copie des réservations pour pouvoir les modifier
         List<Reservation> reservationsNonAssignees = new ArrayList<>(reservations);
@@ -259,23 +275,25 @@ public class SimulationService {
         // ETAPE 1 : Trier par heure d'arrivée
         reservationsNonAssignees.sort((r1, r2) -> r1.getDateHeureArrive().compareTo(r2.getDateHeureArrive()));
 
-        // ETAPE 1b : Regrouper par temps d'attente et déterminer l'heure de départ groupée
+        // ETAPE 1b : Regrouper par temps d'attente et déterminer l'heure de départ
+        // groupée
         // L'heure de départ du groupe = l'heure d'arrivée la plus tardive du groupe
-        Map<Integer, Timestamp> heureDepartParReservation = new HashMap<>();
+        // On memorise aussi l'heure de depart par reservation (objet) pour l'affichage
+        Map<Reservation, Timestamp> heureDepartParReservation = new HashMap<>();
         List<List<Reservation>> groupesDeDepart;
         if (tempsAttenteMinutes > 0) {
             groupesDeDepart = regroupeParTempsAttente(reservationsNonAssignees, tempsAttenteMinutes);
             for (List<Reservation> groupe : groupesDeDepart) {
                 Timestamp heureDepartGroupe = groupe.get(groupe.size() - 1).getDateHeureArrive();
                 for (Reservation r : groupe) {
-                    heureDepartParReservation.put(r.getId(), heureDepartGroupe);
+                    heureDepartParReservation.put(r, heureDepartGroupe);
                 }
             }
         } else {
             // Pas de regroupement : chaque réservation est son propre groupe
             groupesDeDepart = new ArrayList<>();
             for (Reservation r : reservationsNonAssignees) {
-                heureDepartParReservation.put(r.getId(), r.getDateHeureArrive());
+                heureDepartParReservation.put(r, r.getDateHeureArrive());
                 List<Reservation> singleGroup = new ArrayList<>();
                 singleGroup.add(r);
                 groupesDeDepart.add(singleGroup);
@@ -284,24 +302,27 @@ public class SimulationService {
             groupesDeDepart = fusionnerGroupesMemeHeure(groupesDeDepart);
         }
 
-        // ETAPE 2 : Le tri des réservations par passagers se fait dans chaque groupe (ETAPE 3)
+        // ETAPE 2 : Le tri des réservations par passagers se fait dans chaque groupe
+        // (ETAPE 3)
 
         // ETAPE 3 : Traiter chaque groupe de départ séquentiellement
-        // Après chaque groupe, calculer les horaires pour permettre la réutilisation des véhicules
-        // Les réservations non assignées dans un groupe sont reportées au groupe suivant
+        // Après chaque groupe, calculer les horaires pour permettre la réutilisation
+        // des véhicules
+        // Les réservations non assignées dans un groupe sont reportées au groupe
+        // suivant
         Map<Vehicule, List<InfosTrajet>> infosTrajetParVehicule = new HashMap<>();
         List<Reservation> reservationsReportees = new ArrayList<>();
 
         for (int indexGroupe = 0; indexGroupe < groupesDeDepart.size(); indexGroupe++) {
             List<Reservation> groupe = groupesDeDepart.get(indexGroupe);
             boolean estDernierGroupe = (indexGroupe == groupesDeDepart.size() - 1);
-            Timestamp heureDepartGroupe = heureDepartParReservation.get(groupe.get(0).getId());
+            Timestamp heureDepartGroupe = heureDepartParReservation.get(groupe.get(0));
 
             // Ajouter les réservations reportées du groupe précédent
             List<Reservation> reservationsGroupe = new ArrayList<>(reservationsReportees);
             // Mettre à jour l'heure de départ des réservations reportées vers ce groupe
             for (Reservation r : reservationsReportees) {
-                heureDepartParReservation.put(r.getId(), heureDepartGroupe);
+                heureDepartParReservation.put(r, heureDepartGroupe);
             }
             reservationsReportees.clear();
             reservationsGroupe.addAll(groupe);
@@ -310,102 +331,116 @@ public class SimulationService {
             reservationsGroupe.sort((r1, r2) -> Integer.compare(r2.getNombrePassage(), r1.getNombrePassage()));
 
             while (!reservationsGroupe.isEmpty()) {
-                Reservation reservation = reservationsGroupe.get(0);
-                boolean assignee = false;
+                // On traite les réservations dans l'ordre décroissant de passagers
+                Reservation reservationOriginale = reservationsGroupe.remove(0);
+                int passagersRestants = reservationOriginale.getNombrePassage();
 
-                // Chercher le meilleur véhicule selon les critères :
-                // 1. Disponible à l'heure de départ du groupe
-                // 2. Capacité suffisante et même groupe de départ
-                // 3. Moins de trajets effectués
-                // 4. Nombre de places le plus proche du nombre de passagers
-                // 5. Diesel prioritaire
-                VehiculeAvecCapacite meilleurVehicule = null;
+                // On peut repartir une même réservation sur plusieurs véhicules
+                // du même groupe. Pour chaque "portion", on choisit le véhicule
+                // le plus adapté selon les critères, jusqu'à épuisement des
+                // passagers ou des capacités disponibles.
+                while (passagersRestants > 0) {
+                    VehiculeAvecCapacite meilleurVehicule = null;
 
-                for (VehiculeAvecCapacite vehiculeAvecCap : vehiculesDisponibles) {
-                    // Vérifier la disponibilité du véhicule à l'heure de départ du groupe
-                    if (!vehiculeAvecCap.estDisponibleA(heureDepartGroupe)) {
-                        continue; // Véhicule en trajet, pas encore revenu
-                    }
+                    // Chercher le meilleur véhicule selon les critères :
+                    // 1. Disponible à l'heure de départ du groupe
+                    // 2. Même groupe de départ
+                    // 3. Capacité restante la plus proche du nombre de passagers restants
+                    // 4. Moins de trajets effectués
+                    // 5. Type de carburant prioritaire
+                    // 6. Aléatoire en cas de parfaite égalité
+                    for (VehiculeAvecCapacite vehiculeAvecCap : vehiculesDisponibles) {
+                        // Vérifier la disponibilité du véhicule à l'heure de départ du groupe
+                        if (!vehiculeAvecCap.estDisponibleA(heureDepartGroupe)) {
+                            continue; // Véhicule en trajet, pas encore revenu
+                        }
 
-                    // Vérifier si le véhicule est vide OU s'il a des réservations du même groupe
-                    boolean memeGroupe = vehiculeAvecCap.reservations.isEmpty() ||
-                            heureDepartParReservation.get(vehiculeAvecCap.reservations.get(0).getId())
-                                    .equals(heureDepartGroupe);
+                        // Vérifier si le véhicule est vide OU s'il a des réservations du même groupe
+                        boolean memeGroupe = vehiculeAvecCap.reservations.isEmpty() ||
+                                heureDepartParReservation.get(vehiculeAvecCap.reservations.get(0))
+                                        .equals(heureDepartGroupe);
 
-                    if (!memeGroupe || !vehiculeAvecCap.peutAccueillir(reservation.getNombrePassage())) {
-                        continue;
-                    }
-
-                    // Ce véhicule est candidat, le comparer au meilleur actuel
-                    if (meilleurVehicule == null) {
-                        meilleurVehicule = vehiculeAvecCap;
-                    } else {
-                        // Critère 1 : moins de trajets effectués
-                        int trajetsCandidat = vehiculeAvecCap.trajetsOccupes.size();
-                        int trajetsMeilleur = meilleurVehicule.trajetsOccupes.size();
-                        if (trajetsCandidat != trajetsMeilleur) {
-                            if (trajetsCandidat < trajetsMeilleur) {
-                                meilleurVehicule = vehiculeAvecCap;
-                            }
+                        // Si le véhicule n'est pas dans ce groupe ou n'a plus de place, on ignore
+                        if (!memeGroupe || vehiculeAvecCap.placesRestantes <= 0) {
                             continue;
                         }
 
-                        // Critère 2 : nombre de places le plus proche du nombre de passagers
-                        int diffCandidat = vehiculeAvecCap.vehicule.getNombrePlaces() - reservation.getNombrePassage();
-                        int diffMeilleur = meilleurVehicule.vehicule.getNombrePlaces() - reservation.getNombrePassage();
-                        if (diffCandidat != diffMeilleur) {
+                        // Ce véhicule est candidat, le comparer au meilleur actuel
+                        if (meilleurVehicule == null) {
+                            meilleurVehicule = vehiculeAvecCap;
+                        } else {
+                            // Critère 1 : capacité restante la plus proche du nombre de passagers restants
+                            int diffCandidat = Math.abs(vehiculeAvecCap.placesRestantes - passagersRestants);
+                            int diffMeilleur = Math.abs(meilleurVehicule.placesRestantes - passagersRestants);
                             if (diffCandidat < diffMeilleur) {
                                 meilleurVehicule = vehiculeAvecCap;
+                                continue;
+                            } else if (diffCandidat > diffMeilleur) {
+                                continue;
                             }
-                            continue;
-                        }
 
-                        // Critère 3 : diesel prioritaire
-                        boolean candidatDiesel = vehiculeAvecCap.vehicule.getTypeCarburant() != null &&
-                                CARBURANT_PRIORITAIRE.equals(vehiculeAvecCap.vehicule.getTypeCarburant().getReference());
-                        boolean meilleurDiesel = meilleurVehicule.vehicule.getTypeCarburant() != null &&
-                                CARBURANT_PRIORITAIRE.equals(meilleurVehicule.vehicule.getTypeCarburant().getReference());
-                        if (candidatDiesel && !meilleurDiesel) {
-                            meilleurVehicule = vehiculeAvecCap;
-                        }
-                    }
-                }
+                            // Critère 2 : moins de trajets effectués
+                            int trajetsCandidat = vehiculeAvecCap.trajetsOccupes.size();
+                            int trajetsMeilleur = meilleurVehicule.trajetsOccupes.size();
+                            if (trajetsCandidat < trajetsMeilleur) {
+                                meilleurVehicule = vehiculeAvecCap;
+                                continue;
+                            } else if (trajetsCandidat > trajetsMeilleur) {
+                                continue;
+                            }
 
-                // Assigner au meilleur véhicule trouvé
-                if (meilleurVehicule != null) {
-                    meilleurVehicule.ajouterReservation(reservation);
-                    reservationsGroupe.remove(0);
-                    reservationsNonAssignees.remove(reservation);
-                    assignee = true;
+                            // Critère 3 : type de carburant prioritaire
+                            boolean candidatDiesel = vehiculeAvecCap.vehicule.getTypeCarburant() != null &&
+                                    CARBURANT_PRIORITAIRE
+                                            .equals(vehiculeAvecCap.vehicule.getTypeCarburant().getReference());
+                            boolean meilleurDiesel = meilleurVehicule.vehicule.getTypeCarburant() != null &&
+                                    CARBURANT_PRIORITAIRE
+                                            .equals(meilleurVehicule.vehicule.getTypeCarburant().getReference());
+                            if (candidatDiesel && !meilleurDiesel) {
+                                meilleurVehicule = vehiculeAvecCap;
+                                continue;
+                            } else if (!candidatDiesel && meilleurDiesel) {
+                                continue;
+                            }
 
-                    // OPTIMISATION : Chercher d'autres réservations du même groupe à ajouter
-                    if (meilleurVehicule.placesRestantes > 0) {
-                        List<Reservation> aSupprimer = new ArrayList<>();
-
-                        for (Reservation autreReservation : reservationsGroupe) {
-                            if (meilleurVehicule.peutAccueillir(autreReservation.getNombrePassage())) {
-                                meilleurVehicule.ajouterReservation(autreReservation);
-                                aSupprimer.add(autreReservation);
-
-                                if (meilleurVehicule.placesRestantes == 0) {
-                                    break;
-                                }
+                            // Critère 4 : aléatoire si tout est identique
+                            if (Math.random() < 0.5) {
+                                meilleurVehicule = vehiculeAvecCap;
                             }
                         }
-                        reservationsGroupe.removeAll(aSupprimer);
-                        reservationsNonAssignees.removeAll(aSupprimer);
                     }
+
+                    // Aucun véhicule disponible pour cette réservation dans ce groupe
+                    if (meilleurVehicule == null) {
+                        break;
+                    }
+
+                    // Nombre de passagers que l'on peut mettre dans ce véhicule
+                    int aAssigner = Math.min(meilleurVehicule.placesRestantes, passagersRestants);
+                    if (aAssigner <= 0) {
+                        break;
+                    }
+
+                    // Créer une "partie" de la réservation pour la simulation, avec seulement
+                    // le nombre de passagers effectivement pris par ce véhicule
+                    Reservation partieReservation = copierReservation(reservationOriginale, aAssigner);
+                    meilleurVehicule.ajouterReservation(partieReservation);
+                    // Memoriser l'heure de depart pour cette ligne de reservation
+                    heureDepartParReservation.put(partieReservation, heureDepartGroupe);
+
+                    passagersRestants -= aAssigner;
                 }
 
-                // Si la réservation n'a pas pu être assignée
-                if (!assignee) {
-                    Reservation nonAssignee = reservationsGroupe.remove(0);
+                // Si après tentative il reste des passagers non assignés pour cette réservation
+                if (passagersRestants > 0) {
+                    Reservation reste = copierReservation(reservationOriginale, passagersRestants);
                     if (estDernierGroupe) {
-                        // Dernier groupe de la journée : impossible à assigner
-                        reservationsImpossiblesAAssigner.add(nonAssignee);
+                        // Dernier groupe de la journée : impossible à assigner (totalement ou
+                        // partiellement)
+                        reservationsImpossiblesAAssigner.add(reste);
                     } else {
-                        // Reporter au prochain groupe
-                        reservationsReportees.add(nonAssignee);
+                        // Reporter la partie restante au prochain groupe
+                        reservationsReportees.add(reste);
                     }
                 }
             }
@@ -433,7 +468,7 @@ public class SimulationService {
                             infosTrajetParVehicule.put(vehiculeAvecCap.vehicule, trajets);
                         }
                         trajets.add(new InfosTrajet(vehiculeAvecCap.heureDepart, vehiculeAvecCap.heureRetour,
-                                        vehiculeAvecCap.dureeTrajetMinutes, vehiculeAvecCap.segments));
+                                vehiculeAvecCap.dureeTrajetMinutes, vehiculeAvecCap.segments));
 
                         // Préparer le véhicule pour un éventuel nouveau trajet
                         // (sauvegarde le trajet actuel dans trajetsOccupes et réinitialise)
@@ -454,6 +489,7 @@ public class SimulationService {
         resultat.setVehiculesAvecReservations(vehiculesAvecReservations);
         resultat.setReservationsNonAssignees(reservationsImpossiblesAAssigner);
         resultat.setInfosTrajetParVehicule(infosTrajetParVehicule);
+        resultat.setHeureDepartParReservation(heureDepartParReservation);
 
         return resultat;
     }
@@ -493,10 +529,12 @@ public class SimulationService {
      * 
      * @param vehiculeAvecCap   Véhicule avec ses réservations
      * @param conn              Connexion à la base de données
-     * @param heureDepartGroupe Heure de départ du groupe (= dernière arrivée du groupe)
+     * @param heureDepartGroupe Heure de départ du groupe (= dernière arrivée du
+     *                          groupe)
      * @throws SQLException
      */
-    private static void calculerHoraires(VehiculeAvecCapacite vehiculeAvecCap, Connection conn, Timestamp heureDepartGroupe) throws SQLException {
+    private static void calculerHoraires(VehiculeAvecCapacite vehiculeAvecCap, Connection conn,
+            Timestamp heureDepartGroupe) throws SQLException {
         List<Reservation> reservations = vehiculeAvecCap.reservations;
         Vehicule vehicule = vehiculeAvecCap.vehicule;
 
@@ -600,7 +638,8 @@ public class SimulationService {
                 tempsTrajetTotal += segment.getDureeMinutes();
             }
 
-            // L'heure de départ = heure d'arrivée du vol (le véhicule récupère les passagers à l'aéroport)
+            // L'heure de départ = heure d'arrivée du vol (le véhicule récupère les
+            // passagers à l'aéroport)
             vehiculeAvecCap.heureDepart = heureArrivee;
 
             // L'heure de retour = heure de départ + temps total du trajet
@@ -741,6 +780,27 @@ public class SimulationService {
                 .multiply(new BigDecimal(60))
                 .divide(new BigDecimal(vitesseMoyenneKmH), 0, RoundingMode.HALF_UP)
                 .intValue();
+    }
+
+    /**
+     * Crée une copie légère d'une réservation en ajustant uniquement le nombre de
+     * passagers.
+     * Utilisée pour représenter les fractions d'une réservation réparties sur
+     * plusieurs véhicules
+     * dans la simulation, sans toucher à la réservation d'origine en base.
+     */
+    private static Reservation copierReservation(Reservation source, int nombrePassagers) {
+        Reservation copie = new Reservation();
+        copie.setId(source.getId());
+        copie.setIdClient(source.getIdClient());
+        copie.setIdHotel(source.getIdHotel());
+        copie.setNombrePassage(nombrePassagers);
+        copie.setDateHeureArrive(source.getDateHeureArrive());
+        copie.setClient(source.getClient());
+        copie.setHotel(source.getHotel());
+        copie.setIdVehicule(source.getIdVehicule());
+        copie.setVehicule(source.getVehicule());
+        return copie;
     }
 
     /**

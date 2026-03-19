@@ -673,6 +673,7 @@
             Map<Vehicule, List<Reservation>> vehiculesAvecReservations = (Map<Vehicule, List<Reservation>>) request.getAttribute("vehiculesAvecReservations");
             Map<Vehicule, List<SimulationService.InfosTrajet>> infosTrajetParVehicule = (Map<Vehicule, List<SimulationService.InfosTrajet>>) request.getAttribute("infosTrajetParVehicule");
             List<Reservation> reservationsNonAssignees = (List<Reservation>) request.getAttribute("reservationsNonAssignees");
+            Map<Reservation, java.sql.Timestamp> heureDepartParReservation = (Map<Reservation, java.sql.Timestamp>) request.getAttribute("heureDepartParReservation");
             Integer nombreVehicules = (Integer) request.getAttribute("nombreVehicules");
             Integer nombreReservationsTotal = (Integer) request.getAttribute("nombreReservationsTotal");
             Integer nombreReservationsAssignees = (Integer) request.getAttribute("nombreReservationsAssignees");
@@ -758,7 +759,13 @@
                                 </div>
                             </div>
                             <div class="reservation-count">
-                                <%= reservations.size() %> reservation(s)
+                                <%
+                                    int totalPassagersVehicule = 0;
+                                    for (Reservation r : reservations) {
+                                        totalPassagersVehicule += r.getNombrePassage();
+                                    }
+                                %>
+                                <%= reservations.size() %> reservation(s) · <%= totalPassagersVehicule %> passager(s)
                             </div>
                         </div>
 
@@ -836,7 +843,8 @@
                                             <th>Hotel</th>
                                             <th>Ville</th>
                                             <th>Arrivee Vol</th>
-                                            <th>Passagers</th>
+                                            <th>Depart vehicule</th>
+                                            <th>Passagers assignes</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -859,6 +867,12 @@
                                             </td>
                                             <td>
                                                 <div class="cell-primary"><%= r.getDateHeureArrive() != null ? timeFormat2.format(r.getDateHeureArrive()) : "-" %></div>
+                                            </td>
+                                            <td>
+                                                <%
+                                                    java.sql.Timestamp hDepart = (heureDepartParReservation != null) ? heureDepartParReservation.get(r) : null;
+                                                %>
+                                                <div class="cell-primary"><%= hDepart != null ? timeFormat2.format(hDepart) : "-" %></div>
                                             </td>
                                             <td>
                                                 <span class="passengers-badge"><%= r.getNombrePassage() %> pers.</span>
