@@ -276,6 +276,8 @@ public class ReservationController {
                 List<Reservation> reservationsNonAssignees = resultatSimulation.getReservationsNonAssignees();
                 Map<Vehicule, List<SimulationService.InfosTrajet>> infosTrajetParVehicule = resultatSimulation
                         .getInfosTrajetParVehicule();
+                Map<Reservation, Timestamp> heureDepartParReservation = resultatSimulation
+                        .getHeureDepartParReservation();
 
                 // Compter les véhicules utilisés (avec au moins une réservation)
                 long nombreVehiculesUtilises = vehiculesAvecReservations.values().stream()
@@ -290,6 +292,7 @@ public class ReservationController {
                 mv.addItem("vehiculesAvecReservations", vehiculesAvecReservations);
                 mv.addItem("reservationsNonAssignees", reservationsNonAssignees);
                 mv.addItem("infosTrajetParVehicule", infosTrajetParVehicule);
+                mv.addItem("heureDepartParReservation", heureDepartParReservation);
                 mv.addItem("dateRecherche", dateStr);
                 mv.addItem("nombreVehicules", (int) nombreVehiculesUtilises);
                 mv.addItem("nombreReservationsTotal", reservations.size());
@@ -508,6 +511,7 @@ public class ReservationController {
 
     /**
      * Récupère le paramètre TEMPS_ATTENTE_MINUTES depuis la base de données.
+     * 
      * @return Le temps d'attente en minutes, 0 si non trouvé
      */
     private int getTempsAttenteMinutes(Connection conn) {
