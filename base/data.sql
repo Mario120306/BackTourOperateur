@@ -2,16 +2,13 @@
 
 -- Insertion de clients
 INSERT INTO client (nom, prenom, email) VALUES
-('Dupont', 'Jean', 'jean.dupont@email.com'),
-('Martin', 'Sophie', 'sophie.martin@email.com'),
-('Bernard', 'Pierre', 'pierre.bernard@email.com'),
-('Dubois', 'Marie', 'marie.dubois@email.com'),
-('Leroy', 'Luc', 'luc.leroy@email.com'),
-('Moreau', 'Claire', 'claire.moreau@email.com'),
-('Simon', 'Thomas', 'thomas.simon@email.com'),
-('Laurent', 'Emma', 'emma.laurent@email.com'),
-('Lefebvre', 'Alexandre', 'alexandre.lefebvre@email.com'),
-('Michel', 'Julie', 'julie.michel@email.com');
+('client1', 'Jean', 'jean.dupont@email.com'),
+('client2', 'Sophie', 'sophie.martin@email.com'),
+('client3', 'Pierre', 'pierre.bernard@email.com'),
+('client4', 'Marie', 'marie.dubois@email.com'),
+('client5', 'Luc', 'luc.leroy@email.com'),
+('client6', 'Claire', 'claire.moreau@email.com');
+
 
 -- Insertion d'hôtels
 INSERT INTO hotel (nom, adresse, ville) VALUES

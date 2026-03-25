@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,15 +100,16 @@ public class VehiculeController {
             @RequestParam("nombrePlaces") int nombrePlaces,
             @RequestParam("reference") String reference,
             @RequestParam("vitesseMoyenne") int vitesseMoyenne,
-            @RequestParam("typeCarburantId") int typeCarburantId) {
+            @RequestParam("typeCarburantId") int typeCarburantId,
+            @RequestParam("heureDisponibilite") String heureDisponibilite) {
 
         ModelView mv = new ModelView();
         Connection conn = null;
 
         try {
             conn = DatabaseConnection.getConnection();
-            String sql = "INSERT INTO vehicule (marque, modele, nombre_places, reference, vitesse_moyenne, type_carburant_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO vehicule (marque, modele, nombre_places, reference, vitesse_moyenne, type_carburant_id, heure_disponibilite) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, marque);
@@ -115,6 +118,7 @@ public class VehiculeController {
             stmt.setString(4, reference);
             stmt.setInt(5, vitesseMoyenne);
             stmt.setInt(6, typeCarburantId);
+            stmt.setTime(7, parseHeureDisponibilite(heureDisponibilite));
 
             int rows = stmt.executeUpdate();
             stmt.close();
@@ -147,7 +151,8 @@ public class VehiculeController {
             @RequestParam("nombrePlaces") int nombrePlaces,
             @RequestParam("reference") String reference,
             @RequestParam("vitesseMoyenne") int vitesseMoyenne,
-            @RequestParam("typeCarburantId") int typeCarburantId) {
+            @RequestParam("typeCarburantId") int typeCarburantId,
+            @RequestParam("heureDisponibilite") String heureDisponibilite) {
 
         ModelView mv = new ModelView();
         Connection conn = null;
@@ -155,7 +160,7 @@ public class VehiculeController {
         try {
             conn = DatabaseConnection.getConnection();
             String sql = "UPDATE vehicule SET marque = ?, modele = ?, nombre_places = ?, reference = ?, " +
-                    "vitesse_moyenne = ?, type_carburant_id = ? WHERE id = ?";
+                    "vitesse_moyenne = ?, type_carburant_id = ?, heure_disponibilite = ? WHERE id = ?";
 
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, marque);
@@ -164,7 +169,8 @@ public class VehiculeController {
             stmt.setString(4, reference);
             stmt.setInt(5, vitesseMoyenne);
             stmt.setInt(6, typeCarburantId);
-            stmt.setInt(7, id);
+            stmt.setTime(7, parseHeureDisponibilite(heureDisponibilite));
+            stmt.setInt(8, id);
 
             int rows = stmt.executeUpdate();
             stmt.close();
@@ -248,6 +254,7 @@ public class VehiculeController {
                 v.setNombrePlaces(rs.getInt("nombre_places"));
                 v.setReference(rs.getString("reference"));
                 v.setVitesseMoyenne(rs.getInt("vitesse_moyenne"));
+                v.setHeureDisponibilite(rs.getTime("heure_disponibilite"));
                 v.setTypeCarburantId(rs.getInt("type_carburant_id"));
 
                 TypeCarburant tc = new TypeCarburant();
@@ -290,6 +297,7 @@ public class VehiculeController {
                 vehicule.setNombrePlaces(rs.getInt("nombre_places"));
                 vehicule.setReference(rs.getString("reference"));
                 vehicule.setVitesseMoyenne(rs.getInt("vitesse_moyenne"));
+                vehicule.setHeureDisponibilite(rs.getTime("heure_disponibilite"));
                 vehicule.setTypeCarburantId(rs.getInt("type_carburant_id"));
 
                 TypeCarburant tc = new TypeCarburant();
@@ -333,5 +341,16 @@ public class VehiculeController {
         }
 
         return types;
+    }
+
+    private Time parseHeureDisponibilite(String raw) {
+        if (raw == null || raw.trim().isEmpty()) {
+            return null;
+        }
+        String normalized = raw.trim();
+        if (normalized.length() == 5) {
+            normalized = normalized + ":00";
+        }
+        return Time.valueOf(normalized);
     }
 }
