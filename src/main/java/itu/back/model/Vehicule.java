@@ -1,5 +1,7 @@
 package itu.back.model;
 
+import java.sql.Time;
+
 public class Vehicule {
     private int id;
     private String marque;
@@ -7,6 +9,7 @@ public class Vehicule {
     private int nombrePlaces;
     private String reference;
     private int vitesseMoyenne;
+    private Time heureDisponibilite;
     private int typeCarburantId;
     private TypeCarburant typeCarburant;
 
@@ -71,6 +74,14 @@ public class Vehicule {
 
     public void setVitesseMoyenne(int vitesseMoyenne) {
         this.vitesseMoyenne = vitesseMoyenne;
+    }
+
+    public Time getHeureDisponibilite() {
+        return heureDisponibilite;
+    }
+
+    public void setHeureDisponibilite(Time heureDisponibilite) {
+        this.heureDisponibilite = heureDisponibilite;
     }
 
     public int getTypeCarburantId() {

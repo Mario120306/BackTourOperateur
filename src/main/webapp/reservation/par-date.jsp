@@ -652,6 +652,7 @@
         <div class="main-content">
             <div class="content-wrapper">
                 <div class="page-header">
+                    <h1 style="font-size: 100px;">003229 - 003208 - 003234</h1>
                     <h1 class="page-title">Simulation par Date</h1>
                     <p class="page-subtitle">Visualisez l'assignation des vehicules aux reservations pour une date donnee</p>
                 </div>

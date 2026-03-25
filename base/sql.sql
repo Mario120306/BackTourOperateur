@@ -26,6 +26,7 @@ CREATE TABLE vehicule (
     nombre_places INT NOT NULL,
     reference VARCHAR(255) NOT NULL UNIQUE,
     vitesse_moyenne INT NOT NULL,
+    heure_disponibilite TIME,
     type_carburant_id INT NOT NULL,
     FOREIGN KEY (type_carburant_id) REFERENCES type_carburant(id)
 );  

@@ -185,6 +185,7 @@ public class VehiculeOptimisationService {
                 v.setNombrePlaces(rs.getInt("nombre_places"));
                 v.setReference(rs.getString("reference"));
                 v.setVitesseMoyenne(rs.getInt("vitesse_moyenne"));
+                v.setHeureDisponibilite(rs.getTime("heure_disponibilite"));
                 v.setTypeCarburantId(rs.getInt("type_carburant_id"));
 
                 TypeCarburant tc = new TypeCarburant();

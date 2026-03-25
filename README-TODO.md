@@ -33,6 +33,9 @@ sprint 7
     Implémentation distribution des réservations Mirana
     Test + script Mario
 
-
+sprint 8
+    TL Mario
+    Implémentation distribution des réservations Carolle
+    Test + script Mirana
 
       
