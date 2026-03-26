@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -272,6 +271,9 @@ public class ReservationController {
                 SimulationService.ResultatSimulation resultatSimulation = SimulationService
                         .simulerAssignation(reservations, tousVehicules, conn, tempsAttente);
 
+                // Log technique des résultats pour comparaison sans passer par l'interface
+                resultatSimulation.logResultats("/reservation/par-date " + dateStr);
+
                 Map<Vehicule, List<Reservation>> vehiculesAvecReservations = resultatSimulation
                         .getVehiculesAvecReservations();
                 List<Reservation> reservationsNonAssignees = resultatSimulation.getReservationsNonAssignees();
@@ -387,7 +389,7 @@ public class ReservationController {
 
         try {
             conn = DatabaseConnection.getConnection();
-            String sql = "SELECT v.*, tc.nom AS carburant_nom, tc.reference AS carburant_ref " +
+                String sql = "SELECT v.*, tc.nom AS carburant_nom, tc.reference AS carburant_ref " +
                     "FROM vehicule v " +
                     "LEFT JOIN type_carburant tc ON v.type_carburant_id = tc.id " +
                     "ORDER BY v.marque, v.modele";
@@ -402,7 +404,11 @@ public class ReservationController {
                 vehicule.setModele(rs.getString("modele"));
                 vehicule.setNombrePlaces(rs.getInt("nombre_places"));
                 vehicule.setVitesseMoyenne(rs.getInt("vitesse_moyenne"));
-                vehicule.setHeureDisponibilite(rs.getTime("heure_disponibilite"));
+                try {
+                    vehicule.setHeureDisponibilite(rs.getTime("heure_disponibilite"));
+                } catch (SQLException e) {
+                    // Colonne éventuellement absente sur certaines bases; ignorer silencieusement
+                }
 
                 int idTypeCarburant = rs.getInt("type_carburant_id");
                 if (!rs.wasNull()) {
@@ -469,33 +475,6 @@ public class ReservationController {
 
                 updateStmt.close();
 
-                // Mettre a jour l'heure de disponibilite de chaque vehicule
-                Map<Vehicule, List<SimulationService.InfosTrajet>> infosTrajets = resultat.getInfosTrajetParVehicule();
-                String updateDisponibiliteSql = "UPDATE vehicule SET heure_disponibilite = ? WHERE id = ?";
-                PreparedStatement updateDisponibiliteStmt = conn.prepareStatement(updateDisponibiliteSql);
-
-                for (Vehicule vehicule : vehicules) {
-                    Time prochaineDisponibilite = null;
-                    List<SimulationService.InfosTrajet> trajetsVehicule = infosTrajets.get(vehicule);
-                    if (trajetsVehicule != null) {
-                        for (SimulationService.InfosTrajet trajet : trajetsVehicule) {
-                            Timestamp retour = trajet.getHeureRetour();
-                            if (retour != null &&
-                                    (prochaineDisponibilite == null ||
-                                            retour.toLocalDateTime().toLocalTime().isAfter(
-                                                    prochaineDisponibilite.toLocalTime()))) {
-                                prochaineDisponibilite = Time.valueOf(retour.toLocalDateTime().toLocalTime());
-                            }
-                        }
-                    }
-
-                    updateDisponibiliteStmt.setTime(1, prochaineDisponibilite);
-                    updateDisponibiliteStmt.setInt(2, vehicule.getId());
-                    updateDisponibiliteStmt.executeUpdate();
-                }
-
-                updateDisponibiliteStmt.close();
-
                 return JsonResponse.success(Map.of(
                         "message", "Simulation enregistrée avec succès",
                         "nbAssignations", nbAssignations,
@@ -519,14 +498,6 @@ public class ReservationController {
         try {
             Connection conn = DatabaseConnection.getConnection();
             try {
-                String clearVehiculesSql = "UPDATE vehicule SET heure_disponibilite = NULL " +
-                        "WHERE id IN (SELECT DISTINCT id_vehicule FROM reservation " +
-                        "WHERE DATE(date_heure_arrive) = ? AND id_vehicule IS NOT NULL)";
-                PreparedStatement clearVehiculesStmt = conn.prepareStatement(clearVehiculesSql);
-                clearVehiculesStmt.setDate(1, java.sql.Date.valueOf(dateStr));
-                clearVehiculesStmt.executeUpdate();
-                clearVehiculesStmt.close();
-
                 String sql = "UPDATE reservation SET id_vehicule = NULL WHERE DATE(date_heure_arrive) = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
                 stmt.setDate(1, java.sql.Date.valueOf(dateStr));
