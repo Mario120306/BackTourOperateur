@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="itu.back.model.Vehicule" %>
 <%@ page import="itu.back.model.TypeCarburant" %>
 <!DOCTYPE html>
@@ -198,14 +197,6 @@
 
             <h1 class="page-title"><%= isEdit != null && isEdit ? "Modifier" : "Ajouter" %> un Vehicule</h1>
 
-            <%
-                String heureDisponibiliteValue = "";
-                if (vehicule != null && vehicule.getHeureDisponibilite() != null) {
-                    SimpleDateFormat dtLocal = new SimpleDateFormat("HH:mm");
-                    heureDisponibiliteValue = dtLocal.format(vehicule.getHeureDisponibilite());
-                }
-            %>
-
             <% if (request.getAttribute("success") != null) { %>
                 <div class="alert alert-success"><%= request.getAttribute("success") %></div>
             <% } %>
@@ -271,12 +262,6 @@
                         <%  }
                         } %>
                     </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="heureDisponibilite">Heure de disponibilite (optionnel)</label>
-                          <input type="time" id="heureDisponibilite" name="heureDisponibilite" class="form-input"
-                           value="<%= heureDisponibiliteValue %>">
                 </div>
 
                 <div class="btn-group">

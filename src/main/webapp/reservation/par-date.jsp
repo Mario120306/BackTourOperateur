@@ -652,7 +652,6 @@
         <div class="main-content">
             <div class="content-wrapper">
                 <div class="page-header">
-                    <h1 style="font-size: 100px;">003229 - 003208 - 003234</h1>
                     <h1 class="page-title">Simulation par Date</h1>
                     <p class="page-subtitle">Visualisez l'assignation des vehicules aux reservations pour une date donnee</p>
                 </div>
@@ -771,69 +770,10 @@
                         </div>
 
                         <% 
+                        // on recupere simplement la liste des trajets pour ce vehicule
+                        // (utilisee ensuite pour calculer arrivee et duree par reservation)
                         List<SimulationService.InfosTrajet> listeTrajets = (infosTrajetParVehicule != null) ? infosTrajetParVehicule.get(vehicule) : null;
-                        if (listeTrajets != null && !listeTrajets.isEmpty() && !reservations.isEmpty()) { 
-                            SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-                            int numTrajet = 0;
-                            for (SimulationService.InfosTrajet infosTrajet : listeTrajets) {
-                                numTrajet++;
                         %>
-                            <% if (listeTrajets.size() > 1) { %>
-                                <h4 style="margin: 16px 24px 0; color: var(--text-secondary); font-size: 0.85rem;">Trajet #<%= numTrajet %></h4>
-                            <% } %>
-                            <div class="timing-section">
-                                <div class="timing-item">
-                                    <div class="timing-label">Depart Aeroport</div>
-                                    <div class="timing-value depart"><%= timeFormat.format(infosTrajet.getHeureDepart()) %></div>
-                                </div>
-                                <div class="timing-item">
-                                    <div class="timing-label">Retour Aeroport</div>
-                                    <div class="timing-value retour"><%= timeFormat.format(infosTrajet.getHeureRetour()) %></div>
-                                </div>
-                                <div class="timing-item">
-                                    <div class="timing-label">Duree Totale</div>
-                                    <div class="timing-value duree"><% 
-                                        int dureeMin = infosTrajet.getDureeTrajetMinutes();
-                                        if (dureeMin < 60) {
-                                            out.print(dureeMin + " min");
-                                        } else {
-                                            int heures = dureeMin / 60;
-                                            int minutes = dureeMin % 60;
-                                            if (minutes > 0) {
-                                                out.print(heures + "h" + String.format("%02d", minutes));
-                                            } else {
-                                                out.print(heures + "h00");
-                                            }
-                                        }
-                                    %></div>
-                                </div>
-                            </div>
-
-                            <% if (infosTrajet.getSegments() != null && !infosTrajet.getSegments().isEmpty()) { %>
-                                <div class="route-section">
-                                    <h4 class="route-title">Details du trajet</h4>
-                                    <div class="route-segments">
-                                        <% for (int i = 0; i < infosTrajet.getSegments().size(); i++) {
-                                            SimulationService.SegmentTrajet segment = infosTrajet.getSegments().get(i);
-                                        %>
-                                            <div class="route-segment">
-                                                <div class="segment-route">
-                                                    <span class="segment-point"><%= segment.getOrigine() %></span>
-                                                    <span class="segment-arrow">→</span>
-                                                    <span class="segment-point"><%= segment.getDestination() %></span>
-                                                </div>
-                                                <div class="segment-metrics">
-                                                    <span class="metric-badge distance"><%= String.format("%.1f", segment.getDistanceKm()) %> km</span>
-                                                    <span class="metric-badge duration"><%= segment.getDureeMinutes() %> min</span>
-                                                </div>
-                                            </div>
-                                        <% } %>
-                                    </div>
-                                </div>
-                            <% } %>
-                        <% 
-                            } // end for each trajet
-                        } %>
 
                         <% if (!reservations.isEmpty()) { %>
                             <div class="table-section">
@@ -842,10 +782,10 @@
                                         <tr>
                                             <th>Client</th>
                                             <th>Hotel</th>
-                                            <th>Ville</th>
-                                            <th>Arrivee Vol</th>
                                             <th>Depart vehicule</th>
-                                            <th>Passagers assignes</th>
+                                            <th>Arrivee vehicule</th>
+                                            <th>Duree trajet</th>
+                                            <th>Passagers</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -854,6 +794,41 @@
                                         for (Reservation r : reservations) { 
                                             Client client = r.getClient();
                                             Hotel hotel = r.getHotel();
+
+                                            java.sql.Timestamp hDepart = (heureDepartParReservation != null) ? heureDepartParReservation.get(r) : null;
+
+                                            // on cherche le trajet correspondant a cette reservation (meme heure de depart)
+                                            SimulationService.InfosTrajet trajetAssocie = null;
+                                            if (hDepart != null && listeTrajets != null) {
+                                                for (SimulationService.InfosTrajet t : listeTrajets) {
+                                                    if (t.getHeureDepart() != null && t.getHeureDepart().equals(hDepart)) {
+                                                        trajetAssocie = t;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+
+                                            String departStr = hDepart != null ? timeFormat2.format(hDepart) : "-";
+                                            String arriveeStr = "-";
+                                            String dureeStr = "-";
+
+                                            if (trajetAssocie != null) {
+                                                if (trajetAssocie.getHeureRetour() != null) {
+                                                    arriveeStr = timeFormat2.format(trajetAssocie.getHeureRetour());
+                                                }
+                                                int dureeMin = trajetAssocie.getDureeTrajetMinutes();
+                                                if (dureeMin < 60) {
+                                                    dureeStr = dureeMin + " min";
+                                                } else {
+                                                    int heures = dureeMin / 60;
+                                                    int minutes = dureeMin % 60;
+                                                    if (minutes > 0) {
+                                                        dureeStr = heures + "h" + String.format("%02d", minutes);
+                                                    } else {
+                                                        dureeStr = heures + "h00";
+                                                    }
+                                                }
+                                            }
                                         %>
                                         <tr>
                                             <td>
@@ -864,16 +839,13 @@
                                                 <div class="cell-primary"><%= hotel != null ? hotel.getNom() : "-" %></div>
                                             </td>
                                             <td>
-                                                <div class="cell-secondary"><%= hotel != null ? hotel.getVille() : "-" %></div>
+                                                <div class="cell-primary"><%= departStr %></div>
                                             </td>
                                             <td>
-                                                <div class="cell-primary"><%= r.getDateHeureArrive() != null ? timeFormat2.format(r.getDateHeureArrive()) : "-" %></div>
+                                                <div class="cell-primary"><%= arriveeStr %></div>
                                             </td>
                                             <td>
-                                                <%
-                                                    java.sql.Timestamp hDepart = (heureDepartParReservation != null) ? heureDepartParReservation.get(r) : null;
-                                                %>
-                                                <div class="cell-primary"><%= hDepart != null ? timeFormat2.format(hDepart) : "-" %></div>
+                                                <div class="cell-primary"><%= dureeStr %></div>
                                             </td>
                                             <td>
                                                 <span class="passengers-badge"><%= r.getNombrePassage() %> pers.</span>

@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="itu.back.model.Vehicule" %>
 <!DOCTYPE html>
 <html>
@@ -290,7 +289,6 @@
         <div class="content-wrapper">
     <%
         List<Vehicule> vehicules = (List<Vehicule>) request.getAttribute("vehicules");
-        SimpleDateFormat dispoFormat = new SimpleDateFormat("HH:mm");
         int totalVehicules = vehicules != null ? vehicules.size() : 0;
         int totalPlaces = 0;
         if (vehicules != null) {
@@ -338,7 +336,6 @@
                             <th>Modele</th>
                             <th>Places</th>
                             <th>Vitesse Moy.</th>
-                            <th>Disponible a</th>
                             <th>Carburant</th>
                             <th>Actions</th>
                         </tr>
@@ -352,7 +349,6 @@
                                 <td><%= v.getModele() %></td>
                                 <td><%= v.getNombrePlaces() %></td>
                                 <td><%= v.getVitesseMoyenne() %> km/h</td>
-                                <td><%= v.getHeureDisponibilite() != null ? dispoFormat.format(v.getHeureDisponibilite()) : "-" %></td>
                                 <td><span class="badge badge-secondary"><%= v.getTypeCarburant() != null ? v.getTypeCarburant().getNom() : "-" %></span></td>
                                 <td class="actions-cell">
                                     <a href="<%= request.getContextPath() %>/vehicule/edit?id=<%= v.getId() %>" class="btn btn-sm btn-edit">Modifier</a>

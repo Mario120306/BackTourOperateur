@@ -9,15 +9,16 @@ public class Vehicule {
     private int nombrePlaces;
     private String reference;
     private int vitesseMoyenne;
-    private Time heureDisponibilite;
     private int typeCarburantId;
     private TypeCarburant typeCarburant;
+    private Time heureDisponibilite;
 
     // Constructeurs
     public Vehicule() {
     }
 
-    public Vehicule(int id, String marque, String modele, int nombrePlaces, String reference, int vitesseMoyenne, int typeCarburantId) {
+    public Vehicule(int id, String marque, String modele, int nombrePlaces, String reference, int vitesseMoyenne,
+            int typeCarburantId) {
         this.id = id;
         this.marque = marque;
         this.modele = modele;
@@ -76,14 +77,6 @@ public class Vehicule {
         this.vitesseMoyenne = vitesseMoyenne;
     }
 
-    public Time getHeureDisponibilite() {
-        return heureDisponibilite;
-    }
-
-    public void setHeureDisponibilite(Time heureDisponibilite) {
-        this.heureDisponibilite = heureDisponibilite;
-    }
-
     public int getTypeCarburantId() {
         return typeCarburantId;
     }
@@ -98,5 +91,13 @@ public class Vehicule {
 
     public void setTypeCarburant(TypeCarburant typeCarburant) {
         this.typeCarburant = typeCarburant;
+    }
+
+    public Time getHeureDisponibilite() {
+        return heureDisponibilite;
+    }
+
+    public void setHeureDisponibilite(Time heureDisponibilite) {
+        this.heureDisponibilite = heureDisponibilite;
     }
 }
