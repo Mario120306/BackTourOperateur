@@ -693,6 +693,87 @@ public class SimulationService {
                     }
                 }
             }
+
+            // RÈGLE 6 : si des réservations n'ont pas pu être assignées dans ce groupe
+            // (reservationsReportees) et qu'un véhicule revient avant le prochain groupe
+            // de réservations, on tente de les utiliser entre les deux groupes.
+            if (!reservationsReportees.isEmpty() && !estDernierGroupe && tempsAttenteMinutes > 0) {
+                // Première arrivée du prochain groupe de réservations
+                List<Reservation> prochainGroupe = groupesDeDepart.get(indexGroupe + 1);
+                Timestamp debutProchainGroupe = prochainGroupe.get(0).getDateHeureArrive();
+                long debutProchainMs = debutProchainGroupe.getTime();
+
+                for (VehiculeAvecCapacite vehiculeAvecCap : vehiculesDisponibles) {
+                    // Chercher le dernier retour de ce véhicule
+                    long dernierRetour = -1L;
+                    for (long[] trajet : vehiculeAvecCap.trajetsOccupes) {
+                        if (trajet[1] > dernierRetour) {
+                            dernierRetour = trajet[1];
+                        }
+                    }
+
+                    // Aucun trajet précédent ou retour après le prochain groupe : on ne peut
+                    // pas insérer un trajet intermédiaire
+                    if (dernierRetour <= 0 || dernierRetour >= debutProchainMs) {
+                        continue;
+                    }
+
+                    // Le véhicule revient avant le prochain groupe : il est disponible pour un
+                    // trajet intermédiaire à partir de cette heure de retour.
+                    Timestamp heureDepartIntermediaire = new Timestamp(dernierRetour);
+
+                    // Réinitialiser l'état du véhicule pour ce trajet intermédiaire
+                    vehiculeAvecCap.placesRestantes = vehiculeAvecCap.vehicule.getNombrePlaces();
+                    vehiculeAvecCap.reservations = new ArrayList<>();
+                    vehiculeAvecCap.heureDepart = null;
+                    vehiculeAvecCap.heureRetour = null;
+                    vehiculeAvecCap.dureeTrajetMinutes = 0;
+                    vehiculeAvecCap.segments = new ArrayList<>();
+
+                    // Tenter de remplir le véhicule avec les réservations reportées
+                    // (logique de remplissage "plus proche de la capacité")
+                    remplirVehiculeAvecAutresReservations(vehiculeAvecCap, reservationsReportees,
+                            heureDepartIntermediaire, heureDepartParReservation);
+
+                    // Si aucune réservation n'a pu être ajoutée, passer au véhicule suivant
+                    if (vehiculeAvecCap.reservations.isEmpty()) {
+                        continue;
+                    }
+
+                    // La voiture part "de suite" à l'heure de retour dès qu'elle a au moins
+                    // une réservation (et possiblement pleine si le remplissage a été complet).
+                    calculerHoraires(vehiculeAvecCap, conn, heureDepartIntermediaire);
+
+                    if (vehiculeAvecCap.heureDepart != null && vehiculeAvecCap.heureRetour != null) {
+                        // Accumuler les réservations de ce trajet intermédiaire
+                        List<Reservation> existantes = vehiculesAvecReservations.get(vehiculeAvecCap.vehicule);
+                        if (existantes == null) {
+                            existantes = new ArrayList<>();
+                            vehiculesAvecReservations.put(vehiculeAvecCap.vehicule, existantes);
+                        }
+                        existantes.addAll(vehiculeAvecCap.reservations);
+
+                        // Accumuler les infos de trajet intermédiaire
+                        List<InfosTrajet> trajets = infosTrajetParVehicule.get(vehiculeAvecCap.vehicule);
+                        if (trajets == null) {
+                            trajets = new ArrayList<>();
+                            infosTrajetParVehicule.put(vehiculeAvecCap.vehicule, trajets);
+                        }
+                        trajets.add(new InfosTrajet(vehiculeAvecCap.heureDepart, vehiculeAvecCap.heureRetour,
+                                vehiculeAvecCap.dureeTrajetMinutes, vehiculeAvecCap.segments));
+
+                        // Sauvegarder ce nouveau trajet intermédiaire dans l'historique et
+                        // réinitialiser pour d'éventuels trajets suivants
+                        vehiculeAvecCap.reinitialiserPourNouveauTrajet();
+                    }
+
+                    // Si toutes les réservations reportées ont été consommées, on peut
+                    // arrêter ici.
+                    if (reservationsReportees.isEmpty()) {
+                        break;
+                    }
+                }
+            }
         }
 
         // Ajouter les véhicules sans réservations avec liste vide

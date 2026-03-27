@@ -20,4 +20,8 @@ Rem : si plusieurs voitures ont le même capacité :
 
 5) et ainsi de suite pour les restes des réservations qui n'ont pas encore été assignés dans ce groupe
 
+6) si une réservation est non assignée et qu'un véhicule revient avant la prochain groupe de réservation
+    a - si la voiture est pleine elle part de suite 
+    b - sinon on y ajoute le temps d'attente et si des réservation arrivent entre temps on essaie de l'y 
+    ajouter comme avec la logique de tout à l'heure sinon elle peut partir s'il y aucun dans ce temps_attente
 
