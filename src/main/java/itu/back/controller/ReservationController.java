@@ -253,23 +253,34 @@ public class ReservationController {
     public ModelView showReservationsByDate(@RequestParam("date") String dateStr) {
         ModelView mv = new ModelView();
         Connection conn = null;
+        long startMs = System.currentTimeMillis();
 
         try {
+            System.out.println("[HTTP] GET /reservation/par-date date=" + dateStr);
             if (dateStr != null && !dateStr.isEmpty()) {
                 conn = DatabaseConnection.getConnection();
+                System.out.println("[HTTP] DB connected (" + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Récupérer les réservations pour la date
                 List<Reservation> reservations = getReservationsByDate(dateStr);
+                System.out.println("[HTTP] reservations fetched: " + reservations.size() + " ("
+                        + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Récupérer tous les véhicules disponibles
                 List<Vehicule> tousVehicules = getAllVehicules();
+                System.out.println("[HTTP] vehicules fetched: " + tousVehicules.size() + " ("
+                        + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Récupérer le temps d'attente pour regroupement
                 int tempsAttente = getTempsAttenteMinutes(conn);
+                System.out.println("[HTTP] tempsAttente=" + tempsAttente + " ("
+                        + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // SIMULATION : Assigner les véhicules aux réservations selon l'algorithme
                 SimulationService.ResultatSimulation resultatSimulation = SimulationService
                         .simulerAssignation(reservations, tousVehicules, conn, tempsAttente);
+
+                System.out.println("[HTTP] simulation done (" + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Log technique des résultats pour comparaison sans passer par l'interface
                 resultatSimulation.logResultats("/reservation/par-date " + dateStr);
@@ -304,7 +315,8 @@ public class ReservationController {
                 mv.addItem("tempsAttente", tempsAttente);
             }
             mv.setView("/reservation/par-date.jsp");
-        } catch (SQLException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
             mv.addItem("error", "Erreur lors de la récupération des données : " + e.getMessage());
             mv.setView("/error.jsp");
         } finally {
@@ -389,7 +401,7 @@ public class ReservationController {
 
         try {
             conn = DatabaseConnection.getConnection();
-                String sql = "SELECT v.*, tc.nom AS carburant_nom, tc.reference AS carburant_ref " +
+            String sql = "SELECT v.*, tc.nom AS carburant_nom, tc.reference AS carburant_ref " +
                     "FROM vehicule v " +
                     "LEFT JOIN type_carburant tc ON v.type_carburant_id = tc.id " +
                     "ORDER BY v.marque, v.modele";
@@ -438,21 +450,30 @@ public class ReservationController {
     @PostMapping("/simulation/enregistrer")
     @Json
     public JsonResponse enregistrerSimulation(@RequestParam("date") String dateStr) {
+        long startMs = System.currentTimeMillis();
         try {
+            System.out.println("[HTTP] POST /simulation/enregistrer date=" + dateStr);
             Connection conn = DatabaseConnection.getConnection();
             try {
                 // Récupérer les réservations pour cette date
                 List<Reservation> reservations = getReservationsByDate(dateStr);
+                System.out.println("[HTTP] reservations fetched: " + reservations.size() + " ("
+                        + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Récupérer tous les véhicules
                 List<Vehicule> vehicules = getAllVehicules();
+                System.out.println("[HTTP] vehicules fetched: " + vehicules.size() + " ("
+                        + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Récupérer le temps d'attente pour regroupement
                 int tempsAttente = getTempsAttenteMinutes(conn);
+                System.out.println("[HTTP] tempsAttente=" + tempsAttente + " ("
+                        + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Simuler l'assignation
                 SimulationService.ResultatSimulation resultat = SimulationService.simulerAssignation(reservations,
                         vehicules, conn, tempsAttente);
+                System.out.println("[HTTP] simulation done (" + (System.currentTimeMillis() - startMs) + " ms)");
 
                 // Enregistrer les assignations en base de données
                 Map<Vehicule, List<Reservation>> assignations = resultat.getVehiculesAvecReservations();
@@ -485,6 +506,7 @@ public class ReservationController {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             return JsonResponse.serverError("Erreur lors de l'enregistrement : " + e.getMessage());
         }
     }

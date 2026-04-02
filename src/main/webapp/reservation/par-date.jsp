@@ -653,6 +653,7 @@
             <div class="content-wrapper">
                 <div class="page-header">
                     <h1 class="page-title">Simulation par Date</h1>
+                    <h2 class="page-title" style="color: red;">ETU003234 - ETU003229 - ETU003208</h2>
                     <p class="page-subtitle">Visualisez l'assignation des vehicules aux reservations pour une date donnee</p>
                 </div>
 

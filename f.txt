@@ -1,0 +1,17 @@
+Voici les problèmes numérotés, prêts à être traités un par un :
+Problème 1 — Règle 4b / 6b : remplirVehiculeAvecAutresReservations() et 
+remplirVehiculeAvecReservationsArrivees() ne priorisent pas "égal ou supérieur" avant la diff minimale.
+Problème 2 — Règle 3 : un véhicule dont le retour tombe après finMs est ignoré dans le calcul de 
+l'heure de départ du groupe.
+Problème 3 — Règle 6a : absence de branche else explicite pour le cas "véhicule plein → départ immédiat".
+Problème 4 — Règle 1 : fenêtre de regroupement glissante au lieu de fixe (à confirmer avec la spécification).
+Citez le numéro et la règle exacte, je corrige le code correspondant.
+
+1 - en effet on doit utiliser d'abord le égal sinon le sup et sinon on prend le info
+2 - oui si un véhicule arrive après la fin du tranche il n'est pas inclus dans la simulation 
+de ce groupe alors sois il attend le prochain groupe ou si des réservations sont non assignés il les prend 
+au moment de l'heure de son retour
+3-une véhicule peut partir imédiatement s'il est plein s'il emmène un non assigné seulement
+sinon il atten le dernier tranche de son départ
+4-oui le regroupement commence au premier arrivée d'une réservation + tempsAttente
+puis si une réservation arrive plus tard on rajoute le tempsAttete , et ainsi de suite 
