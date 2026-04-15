@@ -6,14 +6,11 @@ INSERT INTO client (nom, prenom, email) VALUES
   ('C1', 'Test', 'c1@test.com'),
   ('C2', 'Test', 'c2@test.com'),
   ('C3', 'Test', 'c3@test.com'),
-  ('C4', 'Test', 'c4@test.com'),
-  ('C5', 'Test', 'c5@test.com'),
-  ('C6', 'Test', 'c6@test.com');
+  ('C4', 'Test', 'c4@test.com');
 
 INSERT INTO hotel (nom, adresse, ville) VALUES
-  ('HOTEL_NEAR_D', 'Adresse near', 'Ville'),
-  ('HOTEL_FAR_D', 'Adresse far', 'Ville'),
-  ('HOTEL_B', 'Adresse b', 'Ville');
+  ('HOTEL1', 'Adresse near', 'Ville'),
+  ('HOTEL2', 'Adresse far', 'Ville');
 
 INSERT INTO aeroport (code, libelle) VALUES
   ('TNR', 'Aeroport International Ivato');
@@ -26,24 +23,19 @@ INSERT INTO parametre (code, valeur, description) VALUES
 
 INSERT INTO vehicule (marque, modele, nombre_places, reference, vitesse_moyenne, heure_disponibilite, type_carburant_id)
 VALUES
-  ('M', 'veh_D_1', 6, 'VEH_D_1', 60, '08:00:00', 1),
-  ('M', 'veh_D_2', 6, 'VEH_D_2', 60, '08:00:00', 1),
-  ('M', 'veh_D_3', 6, 'VEH_D_3', 60, '08:00:00', 1),
-  ('M', 'veh_B_1', 10, 'VEH_B_1', 60, '12:00:00', 1);
+  ('M', 'Vehicule1', 10, 'Vehicule1', 60, '00:00:00', 1),
+  ('M', 'Vehicule2', 8, 'Vehicule2', 60, '08:00:00', 1),
+  ('M', 'Vehicule3', 8, 'Vehicule3', 60, '08:00:00', 2),
+  ('M', 'Vehicule4', 12, 'Vehicule4', 60, '09:00:00', 2);
 
 INSERT INTO distance (id_from_hotel, id_from_aeroport, id_to, valeur) VALUES
-  (NULL, 1, 1, 30.00),
-  (NULL, 1, 2, 300.00),
-  (NULL, 1, 3, 30.00);
+  (NULL, 1, 1, 90.00),
+  (NULL, 1, 2, 65.00),
+  (1, NULL, 2, 10.00);
 
 INSERT INTO reservation (id_client, nombre_passage, date_heure_arrive, id_hotel)
 VALUES
-  (1,  6, '2026-04-02 08:00:00', 1),
-  (2,  6, '2026-04-02 08:00:00', 1),
-  (3,  6, '2026-04-02 08:00:00', 1),
-  (4,  5, '2026-04-02 08:10:00', 2),
-  (5,  5, '2026-04-02 08:15:00', 2),
-  (6,  5, '2026-04-02 08:20:00', 2),
-  (1, 10, '2026-04-02 12:00:00', 3),
-  (2,  5, '2026-04-02 12:10:00', 3),
-  (3,  1, '2026-04-02 15:00:00', 3);
+  (1,  20, '2026-04-02 06:00:00', 1),
+  (2,  6, '2026-04-02 08:15:00', 1),
+  (3, 10, '2026-04-02 09:00:00', 1),
+  (4, 6, '2026-04-02 09:10:00', 2);
